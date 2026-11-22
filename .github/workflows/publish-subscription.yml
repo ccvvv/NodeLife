@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
     paths:
-      - "scripts/publish_subscription.py"
       - "nodelife/**"
       - "config/settings.yaml"
       - ".github/workflows/publish-subscription.yml"
@@ -28,19 +27,15 @@ jobs:
     steps:
       - name: Check out NodeLife
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-
       - name: Install Python dependencies
         run: python -m pip install -r requirements.txt
-
       - name: Run tests
         run: python -m pytest
-
       - name: Install pinned Mihomo
         run: |
           curl -fsSL --retry 3 \
@@ -49,23 +44,18 @@ jobs:
           gzip -dc /tmp/mihomo.gz > /usr/local/bin/mihomo
           chmod +x /usr/local/bin/mihomo
           mihomo -v
-
-      - name: Recheck nodes and generate subscription
+      - name: Collect queued releases, probe unique nodes, and generate subscription
         run: python -m nodelife.publisher
-
-      - name: Publish updated subscription
+      - name: Publish subscription and durable queue state
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/latest.yaml
+          git add data/queue_state.json
+          if [ -f data/latest.yaml ]; then git add data/latest.yaml; fi
           if git diff --cached --quiet; then
-            echo "Subscription unchanged; no commit needed."
+            echo "Queue and subscription unchanged; no commit needed."
           else
-            git commit -m "Publish refreshed passing subscription"
-
-            # Rebase on the latest main before pushing. If another commit lands
-            # between fetch and push, fetch/rebase and retry instead of failing
-            # immediately with a non-fast-forward rejection.
+            git commit -m "Process queued final subscription releases"
             for attempt in 1 2 3; do
               echo "Push attempt ${attempt}/3"
               git fetch origin main
@@ -74,16 +64,13 @@ jobs:
                 echo "Rebase conflict: refusing to overwrite remote changes."
                 exit 1
               fi
-
               if git push origin HEAD:main; then
-                echo "Subscription published successfully."
+                echo "Queue state and subscription published successfully."
                 exit 0
               fi
-
               echo "Push rejected; will retry against the newest main."
               sleep 2
             done
-
             echo "Unable to publish after 3 attempts."
             exit 1
           fi
