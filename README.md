@@ -7,19 +7,18 @@ NodeLife is a cloud-based HTTPS availability recheck service for the **phone-tes
 - Repository: `ccvvv/AutoSubHub`
 - Data branch: `published-subscriptions`
 - Final subscription: `final/latest.yaml`
-- Lifecycle metadata: `lifecycle.json`
+- NodeLife output: `data/latest.yaml`
 
-NodeLife reads only the final subscription and its lifecycle metadata. It must never use `candidate/manifest.json` or candidate subscription files as its source of nodes.
+NodeLife reads only AutoSubHub's final subscription. It must never use candidate manifests or candidate subscription files as its source of nodes.
 
-## Intended automation
+## Automation
 
-1. AutoSubHub publishes a new `final/latest.yaml` and updates `lifecycle.json`.
-2. AutoSubHub sends a `repository_dispatch` event named `autohub-final-published` to trigger NodeLife promptly.
-3. NodeLife fetches the latest upstream files after receiving the event; it does not trust node data in the event payload.
-4. NodeLife merges upstream final nodes with the previous successful NodeLife output, deduplicates by the same stable fingerprint used by AutoSubHub, and performs HTTPS availability checks.
-5. Only nodes passing the HTTPS check are kept in the next output. Failed nodes are not carried forward.
-6. A six-hour scheduled check acts as a fallback. The scheduler checks the last successful build time so the interval rolls forward after each successful run.
-7. Fetch, parse, encryption, or probe failures must preserve the previous successful output and state.
+1. AutoSubHub publishes a new final subscription.
+2. NodeLife fetches that upstream subscription and merges it with its previous successful output, deduplicating by stable proxy fingerprint.
+3. NodeLife tests each node independently through Mihomo. Requests must use the tested proxy and must not have a DIRECT fallback.
+4. Only nodes passing at least one configured HTTPS target are written to `data/latest.yaml`.
+5. A scheduled run checks again every six hours. The workflow can also be started manually or runs when its own publishing code/configuration changes.
+6. If fetching, parsing, or probing fails—or no nodes pass—the previous successful subscription is left untouched.
 
 NodeLife does not repeat AutoSubHub's candidate filtering or phone download-speed tests.
 
@@ -34,22 +33,15 @@ NodeLife does not repeat AutoSubHub's candidate filtering or phone download-spee
 
 For each proxy, remove the `name` field, serialize the remaining configuration as compact UTF-8 JSON with sorted keys, then calculate its SHA-256 digest. This matches AutoSubHub's final-subscription lifecycle fingerprint, so display-name changes do not create a new identity.
 
-## Public-repository security
+## Public subscription notice
 
-This repository is public. Do not commit plaintext proxy subscriptions, proxy credentials, access tokens, private keys, or complete subscription URLs.
+This repository is public and the user has chosen **plaintext publication without age encryption**. The subscription at `data/latest.yaml` contains working proxy configurations and can be viewed, copied, and used by anyone. Do not put personal credentials, private account tokens, or unrelated secrets in the subscription.
 
-- The generated subscription must be encrypted with age before it is committed as `data/latest.yaml.age`.
-- The age recipient is a GitHub Actions Variable named `NODELIFE_AGE_RECIPIENT`.
-- The age private identity is a GitHub Actions Secret named `NODELIFE_AGE_IDENTITY`.
-- The AutoSubHub-to-NodeLife dispatch token is stored only as an Actions Secret in AutoSubHub, named `NODELIFE_DISPATCH_TOKEN`. NodeLife does not need a second copy.
-- State and reports may contain hashes, timestamps, and aggregate counts only. They must not contain proxy credentials or raw node configurations.
-- Temporary decrypted files belong under the runner's temporary directory and must be removed after use.
-- Workflow logs must not print proxy names, addresses, UUIDs, passwords, or subscription contents.
+## Subscription URL
+
+`https://raw.githubusercontent.com/ccvvv/NodeLife/main/data/latest.yaml`
 
 ## Configuration
 
-Public, non-secret settings live in `config/settings.yaml`. Python dependencies are listed in `requirements.txt`. `.env.example` contains variable names only; never put real secrets in it.
+Public, non-secret settings live in `config/settings.yaml`. Python dependencies are listed in `requirements.txt`. Do not put real secrets in the repository.
 
-## Project status
-
-Initial configuration scaffold. The probe engine, encrypted output pipeline, event dispatch, and scheduled workflow still need implementation and end-to-end testing. Automation must not be considered production-ready until those tests pass.
