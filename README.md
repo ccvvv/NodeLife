@@ -1,44 +1,55 @@
 # NodeLife
 
-NodeLife is a cloud-based availability recheck project for the final subscription published by [AutoSubHub](https://github.com/ccvvv/AutoSubHub).
+NodeLife is a cloud-based HTTPS availability recheck service for the **phone-tested final subscription** published by [AutoSubHub](https://github.com/ccvvv/AutoSubHub).
 
-## Planned workflow
-
-- Check AutoSubHub's `published-subscriptions` branch and read `final/latest.yaml`.
-- Read `candidate/manifest.json` and `lifecycle.json` to associate nodes with their first-observed timestamps.
-- Compare the upstream final subscription fingerprint with the last successfully processed version.
-- If the upstream final subscription has not changed, report that no recheck is needed.
-- If it changed, merge it with the previous NodeLife result, deduplicate nodes by a stable configuration fingerprint, and recheck availability.
-- Keep only nodes that pass the configured HTTPS availability gate in the next generated subscription.
-- Run automatically every six hours and support manual dispatch.
-- Preserve the previous successful output if fetching, parsing, or testing fails.
-
-## Test policy
-
-The planned cloud test uses the original proxy configuration and must verify that HTTPS requests actually pass through the node under test. At least one successful HTTPS target is sufficient; all configured targets failing means the node fails this round.
-
-This project does not repeat AutoSubHub's candidate filtering or phone download-speed ranking.
-
-## Lifecycle timestamps
-
-AutoSubHub is being extended to publish `lifecycle.json` and a `lifecycle_id` in the candidate manifest. The lifecycle fingerprint excludes the display name, so renaming a node does not reset its first-observed timestamp.
-
-Important: the first timestamp can only be established from the moment this metadata tracker is first deployed. It cannot reconstruct a node's true historical first-publication date from old data that never recorded that timestamp. NodeLife must preserve this distinction in lifecycle reports.
-
-## Data and privacy
-
-This repository is public. Never commit access tokens, source subscription URLs containing credentials, local secret files, or unreviewed node data.
-
-Generated subscription files and detailed per-node records must not be published until the intended sharing permissions and output policy have been confirmed. Workflow logs must not print full proxy configurations, UUIDs, passwords, or complete subscription links.
-
-## Upstream integration
+## Data source
 
 - Repository: `ccvvv/AutoSubHub`
 - Data branch: `published-subscriptions`
 - Final subscription: `final/latest.yaml`
-- Candidate metadata: `candidate/manifest.json`
 - Lifecycle metadata: `lifecycle.json`
 
-## Status
+NodeLife reads only the final subscription and its lifecycle metadata. It must never use `candidate/manifest.json` or candidate subscription files as its source of nodes.
 
-Initial project scaffold. The implementation and end-to-end workflow are not yet enabled.
+## Intended automation
+
+1. AutoSubHub publishes a new `final/latest.yaml` and updates `lifecycle.json`.
+2. AutoSubHub sends a `repository_dispatch` event named `autohub-final-published` to trigger NodeLife promptly.
+3. NodeLife fetches the latest upstream files after receiving the event; it does not trust node data in the event payload.
+4. NodeLife merges upstream final nodes with the previous successful NodeLife output, deduplicates by the same stable fingerprint used by AutoSubHub, and performs HTTPS availability checks.
+5. Only nodes passing the HTTPS check are kept in the next output. Failed nodes are not carried forward.
+6. A six-hour scheduled check acts as a fallback. The scheduler checks the last successful build time so the interval rolls forward after each successful run.
+7. Fetch, parse, encryption, or probe failures must preserve the previous successful output and state.
+
+NodeLife does not repeat AutoSubHub's candidate filtering or phone download-speed tests.
+
+## Probe policy
+
+- Use Mihomo to route each HTTPS request through the individual node being tested.
+- The test must not have a `DIRECT` fallback. A request that bypasses the node must never count as a pass.
+- A node passes when at least one configured HTTPS target succeeds through its proxy.
+- Probe concurrency, timeouts, targets, and Mihomo version are configured in `config/settings.yaml`.
+
+## Fingerprint compatibility
+
+For each proxy, remove the `name` field, serialize the remaining configuration as compact UTF-8 JSON with sorted keys, then calculate its SHA-256 digest. This matches AutoSubHub's final-subscription lifecycle fingerprint, so display-name changes do not create a new identity.
+
+## Public-repository security
+
+This repository is public. Do not commit plaintext proxy subscriptions, proxy credentials, access tokens, private keys, or complete subscription URLs.
+
+- The generated subscription must be encrypted with age before it is committed as `data/latest.yaml.age`.
+- The age recipient is a GitHub Actions Variable named `NODELIFE_AGE_RECIPIENT`.
+- The age private identity is a GitHub Actions Secret named `NODELIFE_AGE_IDENTITY`.
+- The AutoSubHub-to-NodeLife dispatch token is stored only as an Actions Secret in AutoSubHub, named `NODELIFE_DISPATCH_TOKEN`. NodeLife does not need a second copy.
+- State and reports may contain hashes, timestamps, and aggregate counts only. They must not contain proxy credentials or raw node configurations.
+- Temporary decrypted files belong under the runner's temporary directory and must be removed after use.
+- Workflow logs must not print proxy names, addresses, UUIDs, passwords, or subscription contents.
+
+## Configuration
+
+Public, non-secret settings live in `config/settings.yaml`. Python dependencies are listed in `requirements.txt`. `.env.example` contains variable names only; never put real secrets in it.
+
+## Project status
+
+Initial configuration scaffold. The probe engine, encrypted output pipeline, event dispatch, and scheduled workflow still need implementation and end-to-end testing. Automation must not be considered production-ready until those tests pass.
