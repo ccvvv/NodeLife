@@ -1,0 +1,43 @@
+# NodeLife runtime configuration.
+# This file contains public, non-secret settings only.
+
+upstream:
+  repository: ccvvv/AutoSubHub
+  branch: published-subscriptions
+  final_subscription: final/latest.yaml
+  lifecycle_metadata: lifecycle.json
+  # Deliberately do not read candidate/manifest.json.
+
+schedule:
+  recheck_interval_hours: 6
+
+probe:
+  engine: mihomo
+  mihomo_version: v1.19.34
+  concurrency: 10
+  startup_timeout_seconds: 8
+  request_timeout_seconds: 10
+  # A node passes when at least one HTTPS target succeeds through its proxy.
+  https_targets:
+    - https://www.google.com/generate_204
+    - https://www.cloudflare.com/cdn-cgi/trace
+  # Requests must use the local proxy port and must never fall back to DIRECT.
+
+identity:
+  fingerprint: sha256
+  canonicalization: json-sort-keys-compact-utf8
+  ignored_proxy_fields:
+    - name
+
+storage:
+  # NodeLife is public: subscription output must be encrypted before committing.
+  encrypted_output: data/latest.yaml.age
+  state_file: data/state.json
+  report_file: data/last_report.json
+  age_recipient_variable: NODELIFE_AGE_RECIPIENT
+  age_identity_secret: NODELIFE_AGE_IDENTITY
+
+integration:
+  # Reserved for AutoSubHub repository_dispatch integration.
+  dispatch_event_type: autohub-final-published
+  dispatch_token_secret_name: NODELIFE_DISPATCH_TOKEN
