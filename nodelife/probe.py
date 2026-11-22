@@ -9,6 +9,7 @@ import time
 from collections import Counter
 from pathlib import Path
 from typing import Any, Iterable
+from urllib.parse import urlparse
 
 import requests
 import yaml
@@ -116,30 +117,23 @@ def _request_https_result(port: int, targets: Iterable[str], timeout: float, ses
             try:
                 if 200 <= int(response.status_code) < 400:
                     return "passed"
-                observed.append("http_status")
+                observed.append((urlparse(target).hostname or "unknown") + ":http_status")
             finally:
                 response.close()
         except requests.exceptions.ProxyError:
-            observed.append("proxy_connection")
+            observed.append((urlparse(target).hostname or "unknown") + ":proxy_connection")
         except (requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout):
-            observed.append("request_timeout")
+            observed.append((urlparse(target).hostname or "unknown") + ":request_timeout")
         except requests.exceptions.SSLError as error:
-            observed.append(_classify_tls_error(error))
+            observed.append((urlparse(target).hostname or "unknown") + ":" + _classify_tls_error(error))
         except requests.exceptions.ConnectionError:
-            observed.append("connection_error")
+            observed.append((urlparse(target).hostname or "unknown") + ":connection_error")
         except requests.RequestException:
-            observed.append("request_error")
+            observed.append((urlparse(target).hostname or "unknown") + ":request_error")
     if not observed:
         return "request_error"
-    # Preserve the most actionable observed failure without exposing endpoint/node data.
-    for category in (
-        "proxy_connection", "request_timeout", "tls_certificate", "tls_protocol",
-        "tls_handshake", "tls_peer_closed", "tls_other", "connection_error",
-        "http_status", "request_error",
-    ):
-        if category in observed:
-            return category
-    return observed[-1]
+    # Include only the fixed target hostname and safe error category, never node identity.
+    return "|".join(sorted(set(observed)))
 
 
 def probe_one_detailed(
