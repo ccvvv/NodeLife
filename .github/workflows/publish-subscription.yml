@@ -62,5 +62,28 @@ jobs:
             echo "Subscription unchanged; no commit needed."
           else
             git commit -m "Publish refreshed passing subscription"
-            git push
+
+            # Rebase on the latest main before pushing. If another commit lands
+            # between fetch and push, fetch/rebase and retry instead of failing
+            # immediately with a non-fast-forward rejection.
+            for attempt in 1 2 3; do
+              echo "Push attempt ${attempt}/3"
+              git fetch origin main
+              if ! git rebase origin/main; then
+                git rebase --abort
+                echo "Rebase conflict: refusing to overwrite remote changes."
+                exit 1
+              fi
+
+              if git push origin HEAD:main; then
+                echo "Subscription published successfully."
+                exit 0
+              fi
+
+              echo "Push rejected; will retry against the newest main."
+              sleep 2
+            done
+
+            echo "Unable to publish after 3 attempts."
+            exit 1
           fi
