@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "scripts/smoke_upstream.py"
+      - "nodelife/probe.py"
       - ".github/workflows/probe-smoke.yml"
   workflow_dispatch:
 
