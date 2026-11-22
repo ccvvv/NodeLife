@@ -2,46 +2,40 @@
 
 NodeLife is a cloud-based HTTPS availability recheck service for the **phone-tested final subscription** published by [AutoSubHub](https://github.com/ccvvv/AutoSubHub).
 
-## Data source
+## Cumulative release queue
 
-- Repository: `ccvvv/AutoSubHub`
-- Data branch: `published-subscriptions`
-- Final subscription: `final/latest.yaml`
-- NodeLife output: `data/latest.yaml`
+NodeLife reads the Git history for `final/latest.yaml` on AutoSubHub's `published-subscriptions` branch instead of relying only on the moving latest URL.
 
-NodeLife reads only AutoSubHub's final subscription. It must never use candidate manifests or candidate subscription files as its source of nodes.
+- Every commit changing `final/latest.yaml` is a release batch.
+- `data/queue_state.json` stores the newest collected commit and pending node configurations.
+- If NodeLife misses several scheduled runs, it collects every release after the saved cursor, oldest first.
+- Nodes are deduplicated across releases using the same stable SHA-256 fingerprint as AutoSubHub. Display-name-only changes do not create a second test.
+- Nodes already in the successful output are not probed again just because they reappear in a later release.
+- All new unique nodes are tested together in one run.
+- Failed nodes remain in the durable pending queue and are retried on later runs.
+- Existing successful output is retained if a batch has no passing nodes; an empty subscription is never published.
+- If collection or probing fails before queue state is saved, the next run can safely collect the same releases again.
+
+The pending queue contains proxy configurations. This repository already publishes its subscription as plaintext, so pending proxy details are also visible in this public repository. Do not add private credentials, account tokens, or unrelated secrets.
 
 ## Automation
 
-1. AutoSubHub publishes a new final subscription.
-2. NodeLife fetches that upstream subscription and merges it with its previous successful output, deduplicating by stable proxy fingerprint.
-3. NodeLife tests each node independently through Mihomo. Requests must use the tested proxy and must not have a DIRECT fallback.
-4. Only nodes passing at least one configured HTTPS target are written to `data/latest.yaml`.
-5. A scheduled run checks again every six hours. The workflow can also be started manually or runs when its own publishing code/configuration changes.
-6. If fetching, parsing, or probing fails—or no nodes pass—the previous successful subscription is left untouched.
+1. AutoSubHub publishes a phone-tested final subscription revision.
+2. NodeLife checks upstream final-file history every six hours, or on manual dispatch.
+3. Missed revisions are accumulated and deduplicated into one pending queue.
+4. NodeLife probes pending nodes independently through Mihomo, with no DIRECT fallback.
+5. Passing nodes are added to `data/latest.yaml`; failed nodes remain queued for retry.
+6. Queue state and subscription output are committed together.
 
 NodeLife does not repeat AutoSubHub's candidate filtering or phone download-speed tests.
 
 ## Probe policy
 
 - Use Mihomo to route each HTTPS request through the individual node being tested.
-- The test must not have a `DIRECT` fallback. A request that bypasses the node must never count as a pass.
+- No DIRECT fallback is permitted.
 - A node passes when at least one configured HTTPS target succeeds through its proxy.
 - Probe concurrency, timeouts, targets, and Mihomo version are configured in `config/settings.yaml`.
-
-## Fingerprint compatibility
-
-For each proxy, remove the `name` field, serialize the remaining configuration as compact UTF-8 JSON with sorted keys, then calculate its SHA-256 digest. This matches AutoSubHub's final-subscription lifecycle fingerprint, so display-name changes do not create a new identity.
-
-## Public subscription notice
-
-This repository is public and the user has chosen **plaintext publication without age encryption**. The subscription at `data/latest.yaml` contains working proxy configurations and can be viewed, copied, and used by anyone. Do not put personal credentials, private account tokens, or unrelated secrets in the subscription.
 
 ## Subscription URL
 
 `https://raw.githubusercontent.com/ccvvv/NodeLife/main/data/latest.yaml`
-
-## Configuration
-
-Public, non-secret settings live in `config/settings.yaml`. Python dependencies are listed in `requirements.txt`. Do not put real secrets in the repository.
-
