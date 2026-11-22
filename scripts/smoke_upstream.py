@@ -38,33 +38,40 @@ def main() -> int:
     if not total:
         raise SystemExit("published subscription contains no proxies")
 
+    only_index = int(os.environ.get("NODELIFE_PROBE_ONLY_INDEX", "0"))
+    if only_index < 0 or only_index > total:
+        raise SystemExit(f"NODELIFE_PROBE_ONLY_INDEX must be 0 or between 1 and {total}")
+    selected = upstream[only_index - 1 : only_index] if only_index else upstream
+    target_total = len(selected)
+
     print(f"Published subscription parsed: {total} nodes", flush=True)
     print(
         f"Starting DIAGNOSTIC HTTPS recheck: concurrency={concurrency}, "
-        f"batch_size={batch_size}, targets=2; no node identities will be printed",
+        f"batch_size={batch_size}, targets=2, selected_index={only_index or 'all'}; "
+        "no node identities will be printed",
         flush=True,
     )
 
     totals: dict[str, int] = {}
-    for start in range(0, total, batch_size):
-        batch = upstream[start : start + batch_size]
+    for start in range(0, target_total, batch_size):
+        batch = selected[start : start + batch_size]
         counts = probe_many_detailed(
             batch, mihomo_binary="mihomo", targets=TARGETS,
             concurrency=concurrency, startup_timeout=8, request_timeout=10,
         )
         for category, count in counts.items():
             totals[category] = totals.get(category, 0) + count
-        done = min(start + len(batch), total)
+        done = min(start + len(batch), target_total)
         passed = totals.get("passed", 0)
         print(
-            f"PROGRESS done={done}/{total} passed={passed} "
+            f"PROGRESS done={done}/{target_total} passed={passed} "
             f"not_passed={done - passed} categories={dict(sorted(totals.items()))}",
             flush=True,
         )
 
     passed = totals.get("passed", 0)
     print(
-        f"DIAGNOSTIC_RESULT total={total} passed={passed} "
+        f"DIAGNOSTIC_RESULT total={target_total} upstream_total={total} passed={passed} "
         f"not_passed={total - passed} concurrency={concurrency} "
         f"categories={dict(sorted(totals.items()))}",
         flush=True,
