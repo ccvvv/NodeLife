@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from nodelife.identity import extract_proxies, merge_proxies
 from nodelife.probe import probe_one_detailed
 
+# Triggered recheck: consume the newest final subscription published by AutoSubHub.
 UPSTREAM_URL = (
     "https://raw.githubusercontent.com/ccvvv/AutoSubHub/"
     "published-subscriptions/final/latest.yaml"
