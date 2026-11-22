@@ -6,8 +6,9 @@ import socket
 import subprocess
 import tempfile
 import time
+from collections import Counter
 from pathlib import Path
-from typing import Any, Callable, Iterable
+from typing import Any, Iterable
 
 import requests
 import yaml
@@ -20,7 +21,6 @@ class ProbeError(RuntimeError):
 def build_mihomo_config(proxy: dict[str, Any], mixed_port: int) -> dict[str, Any]:
     if not isinstance(proxy, dict) or not isinstance(proxy.get("name"), str) or not proxy["name"]:
         raise ValueError("proxy entry is malformed")
-    # MATCH is forced to the one-node proxy group. No DIRECT rule or fallback is added.
     return {
         "mixed-port": mixed_port,
         "allow-lan": False,
@@ -28,13 +28,7 @@ def build_mihomo_config(proxy: dict[str, Any], mixed_port: int) -> dict[str, Any
         "log-level": "error",
         "ipv6": False,
         "proxies": [dict(proxy)],
-        "proxy-groups": [
-            {
-                "name": "NODELIFE_TEST",
-                "type": "select",
-                "proxies": [proxy["name"]],
-            }
-        ],
+        "proxy-groups": [{"name": "NODELIFE_TEST", "type": "select", "proxies": [proxy["name"]]}],
         "rules": ["MATCH,NODELIFE_TEST"],
     }
 
@@ -45,122 +39,170 @@ def _free_local_port() -> int:
         return int(sock.getsockname()[1])
 
 
-def _wait_for_port(port: int, process: subprocess.Popen[Any], timeout: float) -> None:
+def _wait_for_port(port: int, process: subprocess.Popen[Any], timeout: float) -> str:
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         if process.poll() is not None:
-            raise ProbeError("Mihomo exited before its local proxy became ready")
+            return "mihomo_exit"
         try:
             with socket.create_connection(("127.0.0.1", port), timeout=0.25):
-                return
+                return "ready"
         except OSError:
             time.sleep(0.1)
-    raise ProbeError("Mihomo local proxy startup timed out")
+    return "startup_timeout"
 
 
-def _request_https(
-    port: int,
-    targets: Iterable[str],
-    timeout: float,
-    get: Callable[..., Any] = requests.get,
-) -> bool:
+def _classify_mihomo_log(path: Path) -> str:
+    """Return a safe category only; never emit raw Mihomo logs."""
+    try:
+        content = path.read_text(encoding="utf-8", errors="replace").lower()
+    except OSError:
+        return "mihomo_exit"
+    if any(x in content for x in ("unsupported", "invalid config", "unmarshal", "proxy type", "unknown field")):
+        return "mihomo_config_error"
+    if any(x in content for x in ("error", "fatal", "failed")):
+        return "mihomo_runtime_error"
+    return "mihomo_exit"
+
+
+def _request_https_result(port: int, targets: Iterable[str], timeout: float, session: requests.Session) -> str:
     proxy_url = f"http://127.0.0.1:{port}"
     proxies = {"http": proxy_url, "https": proxy_url}
+    observed: list[str] = []
     for target in targets:
         try:
-            response = get(
-                target,
-                proxies=proxies,
-                timeout=timeout,
-                allow_redirects=True,
-                verify=True,
+            response = session.get(
+                target, proxies=proxies, timeout=timeout,
+                allow_redirects=True, verify=True,
             )
             try:
                 if 200 <= int(response.status_code) < 400:
-                    return True
+                    return "passed"
+                observed.append("http_status")
             finally:
-                close = getattr(response, "close", None)
-                if callable(close):
-                    close()
+                response.close()
+        except requests.exceptions.ProxyError:
+            observed.append("proxy_connection")
+        except (requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout):
+            observed.append("request_timeout")
+        except requests.exceptions.SSLError:
+            observed.append("tls_error")
+        except requests.exceptions.ConnectionError:
+            observed.append("connection_error")
         except requests.RequestException:
-            continue
-    return False
+            observed.append("request_error")
+    if not observed:
+        return "request_error"
+    # Preserve the most actionable observed failure without exposing endpoint/node data.
+    for category in ("proxy_connection", "request_timeout", "tls_error", "connection_error", "http_status", "request_error"):
+        if category in observed:
+            return category
+    return observed[-1]
+
+
+def probe_one_detailed(
+    proxy: dict[str, Any], *, mihomo_binary: str, targets: list[str],
+    startup_timeout: float = 8, request_timeout: float = 10,
+) -> str:
+    """Return a safe diagnostic category; never return or log node identity."""
+    if not targets or any(not str(url).startswith("https://") for url in targets):
+        return "invalid_targets"
+    try:
+        port = _free_local_port()
+        config = build_mihomo_config(proxy, port)
+    except (ValueError, OSError):
+        return "config_error"
+
+    with tempfile.TemporaryDirectory(prefix="nodelife-probe-") as temp_dir:
+        root = Path(temp_dir)
+        config_path = root / "config.yaml"
+        log_path = root / "mihomo.log"
+        try:
+            config_path.write_text(
+                yaml.safe_dump(config, allow_unicode=True, sort_keys=False), encoding="utf-8"
+            )
+            with log_path.open("w", encoding="utf-8") as log_file:
+                try:
+                    process = subprocess.Popen(
+                        [mihomo_binary, "-f", str(config_path)],
+                        stdin=subprocess.DEVNULL, stdout=log_file,
+                        stderr=subprocess.STDOUT, cwd=temp_dir,
+                    )
+                except (OSError, subprocess.SubprocessError):
+                    return "mihomo_spawn_error"
+                try:
+                    startup = _wait_for_port(port, process, startup_timeout)
+                    if startup != "ready":
+                        if process.poll() is not None:
+                            return _classify_mihomo_log(log_path)
+                        return startup
+                    session = requests.Session()
+                    session.trust_env = False
+                    try:
+                        return _request_https_result(port, targets, request_timeout, session)
+                    finally:
+                        session.close()
+                finally:
+                    if process.poll() is None:
+                        process.terminate()
+                        try:
+                            process.wait(timeout=2)
+                        except subprocess.TimeoutExpired:
+                            process.kill()
+                            process.wait(timeout=2)
+        except (OSError, subprocess.SubprocessError):
+            return "local_runtime_error"
 
 
 def probe_one(
-    proxy: dict[str, Any],
-    *,
-    mihomo_binary: str,
-    targets: list[str],
-    startup_timeout: float = 8,
-    request_timeout: float = 10,
+    proxy: dict[str, Any], *, mihomo_binary: str, targets: list[str],
+    startup_timeout: float = 8, request_timeout: float = 10,
 ) -> bool:
-    """Return True only if an HTTPS target responds through this proxy."""
-    if not targets or any(not str(url).startswith("https://") for url in targets):
-        raise ValueError("probe targets must be non-empty HTTPS URLs")
+    """Backward-compatible pass/fail wrapper."""
+    return probe_one_detailed(
+        proxy, mihomo_binary=mihomo_binary, targets=targets,
+        startup_timeout=startup_timeout, request_timeout=request_timeout,
+    ) == "passed"
 
-    port = _free_local_port()
-    config = build_mihomo_config(proxy, port)
-    with tempfile.TemporaryDirectory(prefix="nodelife-probe-") as temp_dir:
-        config_path = Path(temp_dir) / "config.yaml"
-        config_path.write_text(
-            yaml.safe_dump(config, allow_unicode=True, sort_keys=False),
-            encoding="utf-8",
-        )
-        with open(Path(temp_dir) / "mihomo.log", "w", encoding="utf-8") as log_file:
-            process = subprocess.Popen(
-                [mihomo_binary, "-f", str(config_path)],
-                stdin=subprocess.DEVNULL,
-                stdout=log_file,
-                stderr=subprocess.STDOUT,
-                cwd=temp_dir,
+
+def probe_many_detailed(
+    proxies: list[dict[str, Any]], *, mihomo_binary: str, targets: list[str],
+    concurrency: int = 2, startup_timeout: float = 8, request_timeout: float = 10,
+) -> Counter[str]:
+    """Probe concurrently and return aggregate categories only."""
+    if concurrency < 1:
+        raise ValueError("concurrency must be at least 1")
+
+    def run(proxy: dict[str, Any]) -> str:
+        try:
+            return probe_one_detailed(
+                proxy, mihomo_binary=mihomo_binary, targets=targets,
+                startup_timeout=startup_timeout, request_timeout=request_timeout,
             )
-            try:
-                _wait_for_port(port, process, startup_timeout)
-                session = requests.Session()
-                session.trust_env = False
-                try:
-                    return _request_https(
-                        port,
-                        targets,
-                        request_timeout,
-                        get=session.get,
-                    )
-                finally:
-                    session.close()
-            except (ProbeError, OSError, subprocess.SubprocessError):
-                return False
-            finally:
-                if process.poll() is None:
-                    process.terminate()
-                    try:
-                        process.wait(timeout=2)
-                    except subprocess.TimeoutExpired:
-                        process.kill()
-                        process.wait(timeout=2)
+        except Exception:
+            return "unexpected_probe_error"
+
+    counts: Counter[str] = Counter()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as executor:
+        futures = [executor.submit(run, proxy) for proxy in proxies]
+        for future in concurrent.futures.as_completed(futures):
+            counts[future.result()] += 1
+    return counts
 
 
 def probe_many(
-    proxies: list[dict[str, Any]],
-    *,
-    mihomo_binary: str,
-    targets: list[str],
-    concurrency: int = 10,
-    startup_timeout: float = 8,
-    request_timeout: float = 10,
+    proxies: list[dict[str, Any]], *, mihomo_binary: str, targets: list[str],
+    concurrency: int = 10, startup_timeout: float = 8, request_timeout: float = 10,
 ) -> list[dict[str, Any]]:
-    """Probe concurrently and return only aggregate pass/fail per proxy identity."""
+    """Return only passing proxies; retained for existing callers."""
     if concurrency < 1:
         raise ValueError("concurrency must be at least 1")
 
     def run(proxy: dict[str, Any]) -> tuple[dict[str, Any], bool]:
         try:
             passed = probe_one(
-                proxy,
-                mihomo_binary=mihomo_binary,
-                targets=targets,
-                startup_timeout=startup_timeout,
-                request_timeout=request_timeout,
+                proxy, mihomo_binary=mihomo_binary, targets=targets,
+                startup_timeout=startup_timeout, request_timeout=request_timeout,
             )
         except (ValueError, ProbeError):
             passed = False
