@@ -8,6 +8,12 @@ on:
       - "nodelife/probe.py"
       - ".github/workflows/probe-smoke.yml"
   workflow_dispatch:
+    inputs:
+      probe_index:
+        description: "1-based upstream node index; 0 means all nodes"
+        required: false
+        default: "0"
+        type: string
 
 permissions:
   contents: read
@@ -23,6 +29,7 @@ jobs:
     env:
       NODELIFE_PROBE_CONCURRENCY: "2"
       NODELIFE_PROBE_BATCH_SIZE: "30"
+      NODELIFE_PROBE_ONLY_INDEX: ${{ github.event.inputs.probe_index || '0' }}
     steps:
       - name: Check out NodeLife
         uses: actions/checkout@v4
