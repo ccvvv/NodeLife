@@ -7,11 +7,6 @@ on:
       - "scripts/smoke_upstream.py"
       - ".github/workflows/probe-smoke.yml"
   workflow_dispatch:
-    inputs:
-      sample_size:
-        description: Number of first published nodes to probe (1-50)
-        required: true
-        default: "10"
 
 permissions:
   contents: read
@@ -25,7 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      NODELIFE_SMOKE_LIMIT: ${{ inputs.sample_size || '10' }}
+      NODELIFE_PROBE_CONCURRENCY: "2"
+      NODELIFE_PROBE_BATCH_SIZE: "30"
     steps:
       - name: Check out NodeLife
         uses: actions/checkout@v4
