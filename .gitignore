@@ -10,9 +10,5 @@ venv/
 htmlcov/
 *.log
 dist/
-# Never commit plaintext subscription exports or decrypted working files.
-data/latest.yaml
-data/latest.yml
-data/*.decrypted.yaml
-data/*.decrypted.yml
+data/*.tmp
 data/tmp/
