@@ -89,6 +89,20 @@ def _request_https(
     return False
 
 
+def _classify_tls_error(error: requests.exceptions.SSLError) -> str:
+    """Map TLS exceptions to safe categories without printing exception text."""
+    message = str(error).lower()
+    if "certificate verify failed" in message or "certificate has expired" in message:
+        return "tls_certificate"
+    if "wrong version number" in message or "unknown protocol" in message:
+        return "tls_protocol"
+    if any(token in message for token in ("handshake failure", "alert handshake", "tlsv1 alert")):
+        return "tls_handshake"
+    if any(token in message for token in ("unexpected eof", "eof occurred", "connection reset")):
+        return "tls_peer_closed"
+    return "tls_other"
+
+
 def _request_https_result(port: int, targets: Iterable[str], timeout: float, session: requests.Session) -> str:
     proxy_url = f"http://127.0.0.1:{port}"
     proxies = {"http": proxy_url, "https": proxy_url}
@@ -109,8 +123,8 @@ def _request_https_result(port: int, targets: Iterable[str], timeout: float, ses
             observed.append("proxy_connection")
         except (requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout):
             observed.append("request_timeout")
-        except requests.exceptions.SSLError:
-            observed.append("tls_error")
+        except requests.exceptions.SSLError as error:
+            observed.append(_classify_tls_error(error))
         except requests.exceptions.ConnectionError:
             observed.append("connection_error")
         except requests.RequestException:
@@ -118,7 +132,11 @@ def _request_https_result(port: int, targets: Iterable[str], timeout: float, ses
     if not observed:
         return "request_error"
     # Preserve the most actionable observed failure without exposing endpoint/node data.
-    for category in ("proxy_connection", "request_timeout", "tls_error", "connection_error", "http_status", "request_error"):
+    for category in (
+        "proxy_connection", "request_timeout", "tls_certificate", "tls_protocol",
+        "tls_handshake", "tls_peer_closed", "tls_other", "connection_error",
+        "http_status", "request_error",
+    ):
         if category in observed:
             return category
     return observed[-1]
