@@ -99,12 +99,17 @@ def render_subscription(proxies: list[dict[str, Any]]) -> str:
 
 
 def main() -> int:
+    stage = "fetch_upstream"
     response = requests.get(UPSTREAM_URL, timeout=30)
     response.raise_for_status()
+    print(f"UPSTREAM_FETCHED bytes={len(response.content)}", flush=True)
+
+    stage = "parse_upstream"
     upstream = extract_proxies(
         yaml.safe_load(response.text),
         source="AutoSubHub final subscription",
     )
+    stage = "load_previous_output"
     previous = load_previous_output(OUTPUT_PATH)
     candidates = merge_proxies(upstream, previous)
 
@@ -114,12 +119,14 @@ def main() -> int:
         flush=True,
     )
 
+    stage = "probe_nodes"
     passing = filter_passing(candidates, concurrency=2, batch_size=30)
     if not passing:
         raise RuntimeError(
             "No nodes passed the HTTPS checks; previous published subscription was preserved"
         )
 
+    stage = "write_output"
     content = render_subscription(passing)
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     temporary_path = OUTPUT_PATH.with_suffix(".yaml.tmp")
@@ -134,10 +141,15 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    stage = "startup"
     try:
         raise SystemExit(main())
     except Exception as error:
         # Exception messages from upstream/proxy libraries may contain sensitive data.
-        # Emit only the exception class; never print subscription contents or node identity.
-        print(f"NODELIFE_PUBLISH_FAILED error_type={type(error).__name__}", file=sys.stderr, flush=True)
+        print(
+            f"NODELIFE_PUBLISH_FAILED stage={locals().get('stage', 'unknown')} "
+            f"error_type={type(error).__name__}",
+            file=sys.stderr,
+            flush=True,
+        )
         raise SystemExit(1)
