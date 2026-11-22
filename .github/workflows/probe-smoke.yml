@@ -29,7 +29,7 @@ jobs:
     env:
       NODELIFE_PROBE_CONCURRENCY: "2"
       NODELIFE_PROBE_BATCH_SIZE: "30"
-      NODELIFE_PROBE_ONLY_INDEX: ${{ github.event.inputs.probe_index || '0' }}
+      NODELIFE_PROBE_ONLY_INDEX: ${{ github.event_name == 'push' && '26' || github.event.inputs.probe_index || '0' }}
     steps:
       - name: Check out NodeLife
         uses: actions/checkout@v4
