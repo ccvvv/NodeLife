@@ -9,6 +9,10 @@ venv/
 .coverage
 htmlcov/
 *.log
-dist/*.yaml
-dist/*.yml
-data/*.json
+dist/
+# Never commit plaintext subscription exports or decrypted working files.
+data/latest.yaml
+data/latest.yml
+data/*.decrypted.yaml
+data/*.decrypted.yml
+data/tmp/
