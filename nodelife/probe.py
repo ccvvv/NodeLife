@@ -65,6 +65,30 @@ def _classify_mihomo_log(path: Path) -> str:
     return "mihomo_exit"
 
 
+def _request_https(
+    port: int, targets: Iterable[str], timeout: float, get: Any = requests.get,
+) -> bool:
+    """Backward-compatible HTTPS request helper used by unit tests and callers."""
+    proxy_url = f"http://127.0.0.1:{port}"
+    proxies = {"http": proxy_url, "https": proxy_url}
+    for target in targets:
+        try:
+            response = get(
+                target, proxies=proxies, timeout=timeout,
+                allow_redirects=True, verify=True,
+            )
+            try:
+                if 200 <= int(response.status_code) < 400:
+                    return True
+            finally:
+                close = getattr(response, "close", None)
+                if callable(close):
+                    close()
+        except requests.RequestException:
+            continue
+    return False
+
+
 def _request_https_result(port: int, targets: Iterable[str], timeout: float, session: requests.Session) -> str:
     proxy_url = f"http://127.0.0.1:{port}"
     proxies = {"http": proxy_url, "https": proxy_url}
@@ -106,7 +130,7 @@ def probe_one_detailed(
 ) -> str:
     """Return a safe diagnostic category; never return or log node identity."""
     if not targets or any(not str(url).startswith("https://") for url in targets):
-        return "invalid_targets"
+        raise ValueError("probe targets must be non-empty HTTPS URLs")
     try:
         port = _free_local_port()
         config = build_mihomo_config(proxy, port)
