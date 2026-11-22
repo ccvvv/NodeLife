@@ -1,6 +1,7 @@
 """Run a diagnostic HTTPS recheck without publishing node data."""
 from __future__ import annotations
 
+import concurrent.futures
 import os
 import sys
 from pathlib import Path
@@ -11,7 +12,7 @@ import requests
 import yaml
 
 from nodelife.identity import extract_proxies
-from nodelife.probe import probe_many_detailed, probe_one_detailed
+from nodelife.probe import probe_one_detailed
 
 UPSTREAM_URL = (
     "https://raw.githubusercontent.com/ccvvv/AutoSubHub/"
@@ -68,14 +69,28 @@ def main() -> int:
     )
 
     totals: dict[str, int] = {}
+    failed_indices: list[int] = []
     for start in range(0, target_total, batch_size):
         batch = selected[start : start + batch_size]
-        counts = probe_many_detailed(
-            batch, mihomo_binary="mihomo", targets=TARGETS,
-            concurrency=concurrency, startup_timeout=8, request_timeout=10,
-        )
-        for category, count in counts.items():
-            totals[category] = totals.get(category, 0) + count
+        indexed_batch = list(enumerate(batch, start=only_index or start + 1))
+        with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as executor:
+            futures = {
+                executor.submit(
+                    probe_one_detailed,
+                    proxy,
+                    mihomo_binary="mihomo",
+                    targets=TARGETS,
+                    startup_timeout=8,
+                    request_timeout=10,
+                ): index
+                for index, proxy in indexed_batch
+            }
+            results = [(index, future.result()) for future, index in futures.items()]
+        for index, category in sorted(results):
+            totals[category] = totals.get(category, 0) + 1
+            if category != "passed":
+                failed_indices.append(index)
+            print(f"NODE_RESULT index={index} category={category}", flush=True)
         done = min(start + len(batch), target_total)
         passed = totals.get("passed", 0)
         print(
@@ -87,8 +102,8 @@ def main() -> int:
     passed = totals.get("passed", 0)
     print(
         f"DIAGNOSTIC_RESULT total={target_total} upstream_total={total} passed={passed} "
-        f"not_passed={total - passed} concurrency={concurrency} "
-        f"categories={dict(sorted(totals.items()))}",
+        f"not_passed={target_total - passed} concurrency={concurrency} "
+        f"failed_indices={failed_indices} categories={dict(sorted(totals.items()))}",
         flush=True,
     )
     # Diagnostic only: no subscription is generated and no plaintext nodes are published.
