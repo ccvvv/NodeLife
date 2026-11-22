@@ -51,7 +51,7 @@ jobs:
           mihomo -v
 
       - name: Recheck nodes and generate subscription
-        run: python scripts/publish_subscription.py
+        run: python -m nodelife.publisher
 
       - name: Publish updated subscription
         run: |
