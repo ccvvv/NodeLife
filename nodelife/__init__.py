@@ -1,0 +1,1 @@
+"""NodeLife application package."""
