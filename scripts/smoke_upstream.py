@@ -11,7 +11,7 @@ import requests
 import yaml
 
 from nodelife.identity import extract_proxies
-from nodelife.probe import probe_many_detailed
+from nodelife.probe import probe_many_detailed, probe_one_detailed
 
 UPSTREAM_URL = (
     "https://raw.githubusercontent.com/ccvvv/AutoSubHub/"
@@ -37,6 +37,21 @@ def main() -> int:
     total = len(upstream)
     if not total:
         raise SystemExit("published subscription contains no proxies")
+
+    if os.environ.get("NODELIFE_PROBE_FIND_FAILED", "0") == "1":
+        print("Searching sequentially for one failed node; node identity will not be printed", flush=True)
+        for index, proxy in enumerate(upstream, start=1):
+            category = probe_one_detailed(
+                proxy, mihomo_binary="mihomo", targets=TARGETS,
+                startup_timeout=8, request_timeout=10,
+            )
+            if category != "passed":
+                print(f"FIRST_FAILED_NODE index={index} category={category}", flush=True)
+                return 0
+            if index % 10 == 0:
+                print(f"SEARCH_PROGRESS checked={index}/{total}", flush=True)
+        print("FIRST_FAILED_NODE none", flush=True)
+        return 0
 
     only_index = int(os.environ.get("NODELIFE_PROBE_ONLY_INDEX", "0"))
     if only_index < 0 or only_index > total:
