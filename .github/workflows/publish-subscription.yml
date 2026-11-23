@@ -46,12 +46,15 @@ jobs:
           mihomo -v
       - name: Collect queued releases, probe unique nodes, and generate subscription
         run: python -m nodelife.publisher
-      - name: Generate V2RayTun share-link subscription\n        run: python -m scripts.v2raytun_subscription\n      - name: Publish subscription and durable queue state
+      - name: Generate V2RayTun share-link subscription
+        run: python -m scripts.v2raytun_subscription
+      - name: Publish subscription and durable queue state
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/queue_state.json
-          if [ -f data/latest.yaml ]; then git add data/latest.yaml; fi\n          if [ -f data/v2raytun.txt ]; then git add data/v2raytun.txt; fi
+          if [ -f data/latest.yaml ]; then git add data/latest.yaml; fi
+          if [ -f data/v2raytun.txt ]; then git add data/v2raytun.txt; fi
           if git diff --cached --quiet; then
             echo "Queue and subscription unchanged; no commit needed."
           else
