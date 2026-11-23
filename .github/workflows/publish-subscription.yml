@@ -45,6 +45,8 @@ jobs:
           chmod +x /usr/local/bin/mihomo
           mihomo -v
       - name: Collect queued releases, probe unique nodes, and generate subscription
+        env:
+          NODELIFE_GITHUB_TOKEN: ${{ github.token }}
         run: python -m nodelife.publisher
       - name: Generate V2RayTun share-link subscription
         run: python -m scripts.v2raytun_subscription
