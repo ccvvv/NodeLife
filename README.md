@@ -38,4 +38,4 @@ NodeLife does not repeat AutoSubHub's candidate filtering or phone download-spee
 
 ## Subscription URL
 
-`https://raw.githubusercontent.com/ccvvv/NodeLife/main/data/latest.yaml`
+`https://raw.githubusercontent.com/ccvvv/NodeLife/main/data/latest.yaml` (Clash/Mihomo YAML)\n\nV2RayTun-compatible share-link subscription (base64 encoded):\n\n`https://raw.githubusercontent.com/ccvvv/NodeLife/main/data/v2raytun.txt`\n\nThe V2RayTun output is generated from the same passing-node list after every recheck. It includes supported SS, VMess, VLESS, Trojan, and Hysteria2 nodes; unsupported or incomplete Mihomo-only proxy types are skipped. The existing YAML output and recheck policy are unchanged.
