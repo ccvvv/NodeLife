@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import concurrent.futures
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -114,7 +115,7 @@ def fetch_upstream_snapshots(
         response = session.get(
             UPSTREAM_COMMITS_URL,
             params={"path": "final/latest.yaml", "sha": UPSTREAM_BRANCH, "per_page": 100, "page": page},
-            headers={"User-Agent": USER_AGENT, "Accept": "application/vnd.github+json"},
+            headers={**{"User-Agent": USER_AGENT, "Accept": "application/vnd.github+json"}, **({"Authorization": f"Bearer {os.environ[\"NODELIFE_GITHUB_TOKEN\"]}"} if os.environ.get("NODELIFE_GITHUB_TOKEN") else {})},
             timeout=30,
         )
         response.raise_for_status()
@@ -224,5 +225,6 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except Exception as error:
-        print(f"NODELIFE_QUEUE_FAILED error_type={type(error).__name__}", file=sys.stderr, flush=True)
+        detail = f" status={error.response.status_code} url={error.response.url}" if isinstance(error, requests.HTTPError) and error.response is not None else ""
+        print(f"NODELIFE_QUEUE_FAILED error_type={type(error).__name__}{detail}", file=sys.stderr, flush=True)
         raise SystemExit(1)
