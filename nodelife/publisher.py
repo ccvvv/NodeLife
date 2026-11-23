@@ -112,10 +112,14 @@ def fetch_upstream_snapshots(
     cursor_found = last_processed_commit is None
     page = 1
     while True:
+        headers = {"User-Agent": USER_AGENT, "Accept": "application/vnd.github+json"}
+        token = os.environ.get("NODELIFE_GITHUB_TOKEN")
+        if token:
+            headers["Authorization"] = "Bearer " + token
         response = session.get(
             UPSTREAM_COMMITS_URL,
             params={"path": "final/latest.yaml", "sha": UPSTREAM_BRANCH, "per_page": 100, "page": page},
-            headers={**{"User-Agent": USER_AGENT, "Accept": "application/vnd.github+json"}, **({"Authorization": f"Bearer {os.environ[\"NODELIFE_GITHUB_TOKEN\"]}"} if os.environ.get("NODELIFE_GITHUB_TOKEN") else {})},
+            headers=headers,
             timeout=30,
         )
         response.raise_for_status()
