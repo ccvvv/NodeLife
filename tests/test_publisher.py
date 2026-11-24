@@ -12,9 +12,7 @@ def test_filter_passing_keeps_only_successful_nodes_in_source_order(monkeypatch)
 
     monkeypatch.setattr(publisher, "probe_one_detailed", fake_probe)
     result = publisher.filter_passing(
-        [node("first"), node("second"), node("third")],
-        concurrency=2,
-        batch_size=3,
+        [node("first"), node("second"), node("third")], concurrency=2, batch_size=3,
     )
     assert [proxy["name"] for proxy in result] == ["first", "third"]
 
@@ -25,10 +23,19 @@ def test_render_subscription_is_valid_yaml_and_has_only_proxies():
     assert publisher.yaml.safe_load(rendered) == {"proxies": [node("working")]}
 
 
-def test_render_subscription_rejects_empty_result():
-    try:
-        publisher.render_subscription([])
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("empty subscriptions must not be published")
+def test_render_subscription_allows_empty_result():
+    rendered = publisher.render_subscription([])
+    assert publisher.yaml.safe_load(rendered) == {"proxies": []}
+
+
+def test_collect_candidates_includes_current_latest_history_and_previous_with_deduplication():
+    latest = node("latest")
+    historical_only = node("historical")
+    previous_only = node("previous")
+    renamed_duplicate = dict(latest, name="old-name")
+    candidates = publisher.collect_cycle_candidates(
+        [previous_only, renamed_duplicate],
+        [{"commit": "abc", "proxies": [historical_only, dict(latest, name="history-name")]}],
+        {"commit": "current-branch", "proxies": [latest]},
+    )
+    assert [p["name"] for p in candidates] == ["latest", "historical", "previous"]
