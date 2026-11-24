@@ -37,10 +37,10 @@ def test_fetches_latest_previous_and_older_as_https_subscriptions():
 
 
 def test_cycle_pool_merges_three_subscriptions_and_previous_passes_by_fingerprint():
-    latest = node("latest")
-    previous_release = node("previous")
-    older_release = node("older")
-    previous_passed = node("kept-from-last-cycle")
+    latest = node("latest", "latest.example")
+    previous_release = node("previous", "previous.example")
+    older_release = node("older", "older.example")
+    previous_passed = node("kept-from-last-cycle", "last-cycle.example")
     renamed_duplicate = dict(latest, name="same-node-different-name")
     snapshots = [
         {"source": "latest.yaml", "proxies": [latest]},
