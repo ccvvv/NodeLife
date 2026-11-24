@@ -2,40 +2,37 @@
 
 NodeLife is a cloud-based HTTPS availability recheck service for the **phone-tested final subscription** published by [AutoSubHub](https://github.com/ccvvv/AutoSubHub).
 
-## Cumulative release queue
+## Input and recheck cycle
 
-NodeLife reads the Git history for `final/latest.yaml` on AutoSubHub's `published-subscriptions` branch instead of relying only on the moving latest URL.
+NodeLife downloads published subscription files over HTTPS from AutoSubHub's `published-subscriptions` branch. It does not clone AutoSubHub or use Git/API commit history to obtain candidates.
 
-- Every commit changing `final/latest.yaml` is a release batch.
-- `data/queue_state.json` stores the newest collected commit and pending node configurations.
-- If NodeLife misses several scheduled runs, it collects every release after the saved cursor, oldest first.
-- Nodes are deduplicated across releases using the same stable SHA-256 fingerprint as AutoSubHub. Display-name-only changes do not create a second test.
-- Nodes already in the successful output are not probed again just because they reappear in a later release.
-- All new unique nodes are tested together in one run.
-- Failed nodes remain in the durable pending queue and are retried on later runs.
-- Existing successful output is retained if a batch has no passing nodes; an empty subscription is never published.
-- If collection or probing fails before queue state is saved, the next run can safely collect the same releases again.
+Each six-hour cycle:
 
-The pending queue contains proxy configurations. This repository already publishes its subscription as plaintext, so pending proxy details are also visible in this public repository. Do not add private credentials, account tokens, or unrelated secrets.
+1. Download `final/latest.yaml`, `final/previous.yaml`, and `final/older.yaml` as subscription inputs.
+2. Merge those subscriptions with the previous NodeLife passing subscription.
+3. Deduplicate nodes by stable SHA-256 configuration fingerprint; display-name-only changes do not create duplicates.
+4. Re-test the entire merged pool through Mihomo. This is availability verification only; NodeLife does not repeat AutoSubHub's candidate filtering or phone download-speed tests.
+5. Keep only nodes passing this cycle. Failed nodes are discarded and are not carried in a failure queue.
+6. Generate both the Mihomo YAML subscription and the V2RayTun-compatible share-link subscription.
+7. Use Git only at publication time to commit the refreshed output to this NodeLife repository.
 
-## Automation
-
-1. AutoSubHub publishes a phone-tested final subscription revision.
-2. NodeLife checks upstream final-file history every six hours, or on manual dispatch.
-3. Missed revisions are accumulated and deduplicated into one pending queue.
-4. NodeLife probes pending nodes independently through Mihomo, with no DIRECT fallback.
-5. Passing nodes are added to `data/latest.yaml`; failed nodes remain queued for retry.
-6. Queue state and subscription output are committed together.
-
-NodeLife does not repeat AutoSubHub's candidate filtering or phone download-speed tests.
+If an upstream subscription cannot be fetched or parsed, the run fails closed and does not publish a partial result.
 
 ## Probe policy
 
-- Use Mihomo to route each HTTPS request through the individual node being tested.
+- Each HTTPS request must pass through the individual node being tested.
 - No DIRECT fallback is permitted.
 - A node passes when at least one configured HTTPS target succeeds through its proxy.
 - Probe concurrency, timeouts, targets, and Mihomo version are configured in `config/settings.yaml`.
 
-## Subscription URL
+## Published subscription links
 
-`https://raw.githubusercontent.com/ccvvv/NodeLife/main/data/latest.yaml` (Clash/Mihomo YAML)\n\nV2RayTun-compatible share-link subscription (base64 encoded):\n\n`https://raw.githubusercontent.com/ccvvv/NodeLife/main/data/v2raytun.txt`\n\nThe V2RayTun output is generated from the same passing-node list after every recheck. It includes supported SS, VMess, VLESS, Trojan, and Hysteria2 nodes; unsupported or incomplete Mihomo-only proxy types are skipped. The existing YAML output and recheck policy are unchanged.
+Mihomo / Clash YAML:
+
+`https://raw.githubusercontent.com/ccvvv/NodeLife/main/data/latest.yaml`
+
+V2RayTun-compatible share-link subscription (Base64):
+
+`https://raw.githubusercontent.com/ccvvv/NodeLife/main/data/v2raytun.txt`
+
+Both outputs represent the same cycle's passing-node set. The V2RayTun output supports compatible SS, VMess, VLESS, Trojan, and Hysteria2 nodes; unsupported or incomplete Mihomo-only proxy types are skipped.
