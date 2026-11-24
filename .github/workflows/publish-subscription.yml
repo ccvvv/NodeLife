@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "nodelife/**"
+      - "scripts/v2raytun_subscription.py"
+      - "tests/**"
       - "config/settings.yaml"
       - ".github/workflows/publish-subscription.yml"
   schedule:
@@ -44,13 +46,13 @@ jobs:
           gzip -dc /tmp/mihomo.gz > /usr/local/bin/mihomo
           chmod +x /usr/local/bin/mihomo
           mihomo -v
-      - name: Collect queued releases, probe unique nodes, and generate subscription
+      - name: Fetch current and unseen historical releases, re-probe the complete deduplicated pool
         env:
           NODELIFE_GITHUB_TOKEN: ${{ github.token }}
         run: python -m nodelife.publisher
       - name: Generate V2RayTun share-link subscription
         run: python -m scripts.v2raytun_subscription
-      - name: Publish subscription and durable queue state
+      - name: Publish refreshed subscription and history cursor
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
