@@ -1,5 +1,3 @@
-import json
-import pytest
 from nodelife import publisher
 
 
@@ -8,89 +6,75 @@ def node(name="node-a", server="example.com", port=443):
             "cipher": "aes-128-gcm", "password": "test-only"}
 
 
-def test_queue_state_defaults_and_round_trip(tmp_path):
-    path = tmp_path / "queue_state.json"
-    state = publisher.load_queue_state(path)
-    assert state == {"schema_version": 2, "last_processed_commit": None}
-    publisher.save_queue_state(path, state)
-    assert publisher.load_queue_state(path) == state
-
-
-def test_queue_state_migrates_v1_and_discards_legacy_pending(tmp_path):
-    path = tmp_path / "queue_state.json"
-    path.write_text(json.dumps({
-        "schema_version": 1, "last_processed_commit": "a" * 40,
-        "pending": {"old-failure": node()},
-    }))
-    assert publisher.load_queue_state(path) == {
-        "schema_version": 2, "last_processed_commit": "a" * 40,
+def test_fetches_latest_previous_and_older_as_https_subscriptions():
+    seen = []
+    yaml_by_name = {
+        "latest.yaml": "proxies:\n- name: latest\n  type: ss\n  server: latest.example\n  port: 443\n  cipher: aes-128-gcm\n  password: test-only\n",
+        "previous.yaml": "proxies:\n- name: previous\n  type: ss\n  server: previous.example\n  port: 443\n  cipher: aes-128-gcm\n  password: test-only\n",
+        "older.yaml": "proxies:\n- name: older\n  type: ss\n  server: older.example\n  port: 443\n  cipher: aes-128-gcm\n  password: test-only\n",
     }
-
-
-def test_queue_state_rejects_invalid_cursor(tmp_path):
-    path = tmp_path / "queue_state.json"
-    path.write_text(json.dumps({"schema_version": 2, "last_processed_commit": "bad"}))
-    with pytest.raises(ValueError, match="cursor"):
-        publisher.load_queue_state(path)
-
-
-def test_fetch_upstream_snapshots_collects_all_releases_oldest_first():
-    old_sha, new_sha = "1" * 40, "2" * 40
-    yaml_text = ("proxies:\n- name: node\n  type: ss\n  server: example.com\n"
-                 "  port: 443\n  cipher: aes-128-gcm\n  password: test-only\n")
     class Response:
-        def __init__(self, payload=None, text=""):
-            self.payload, self.text = payload, text
-        def raise_for_status(self):
-            pass
-        def json(self):
-            return self.payload
-    class Session:
-        def get(self, url, **kwargs):
-            if url == publisher.UPSTREAM_COMMITS_URL:
-                return Response([{"sha": new_sha}, {"sha": old_sha}])
-            return Response(text=yaml_text)
-    snapshots, cursor = publisher.fetch_upstream_snapshots(None, session=Session())
-    assert [item["commit"] for item in snapshots] == [old_sha, new_sha]
-    assert cursor == new_sha
-
-
-def test_fetch_upstream_snapshots_stops_at_saved_cursor():
-    cursor_sha = "2" * 40
-    class Response:
-        def raise_for_status(self):
-            pass
-        def json(self):
-            return [{"sha": cursor_sha}, {"sha": "1" * 40}]
-    class Session:
-        def get(self, url, **kwargs):
-            return Response()
-    snapshots, cursor = publisher.fetch_upstream_snapshots(cursor_sha, session=Session())
-    assert snapshots == []
-    assert cursor == cursor_sha
-
-
-def test_fetch_upstream_snapshots_fails_closed_if_cursor_disappears():
-    class Response:
-        def raise_for_status(self):
-            pass
-        def json(self):
-            return [{"sha": "1" * 40}]
-    class Session:
-        def get(self, url, **kwargs):
-            return Response()
-    with pytest.raises(RuntimeError, match="cursor"):
-        publisher.fetch_upstream_snapshots("2" * 40, session=Session())
-
-
-def test_fetch_current_latest_runs_independently_of_history_cursor():
-    class Response:
-        text = "proxies:\n- name: current\n  type: ss\n  server: current.example\n  port: 443\n  cipher: aes-128-gcm\n  password: test-only\n"
+        def __init__(self, text):
+            self.text = text
         def raise_for_status(self):
             pass
     class Session:
         def get(self, url, **kwargs):
-            assert url.endswith("/published-subscriptions/final/latest.yaml")
-            return Response()
-    current = publisher.fetch_current_latest(session=Session())
-    assert [p["name"] for p in current["proxies"]] == ["current"]
+            seen.append(url)
+            filename = url.rsplit("/", 1)[-1]
+            return Response(yaml_by_name[filename])
+
+    snapshots = publisher.fetch_upstream_subscriptions(session=Session())
+    assert [item["source"] for item in snapshots] == [
+        "latest.yaml", "previous.yaml", "older.yaml"
+    ]
+    assert [item["proxies"][0]["name"] for item in snapshots] == [
+        "latest", "previous", "older"
+    ]
+    assert len(seen) == 3
+    assert all(url.startswith("https://raw.githubusercontent.com/") for url in seen)
+    assert all("/final/" in url for url in seen)
+
+
+def test_cycle_pool_merges_three_subscriptions_and_previous_passes_by_fingerprint():
+    latest = node("latest")
+    previous_release = node("previous")
+    older_release = node("older")
+    previous_passed = node("kept-from-last-cycle")
+    renamed_duplicate = dict(latest, name="same-node-different-name")
+    snapshots = [
+        {"source": "latest.yaml", "proxies": [latest]},
+        {"source": "previous.yaml", "proxies": [previous_release, renamed_duplicate]},
+        {"source": "older.yaml", "proxies": [older_release]},
+    ]
+    candidates = publisher.collect_cycle_candidates(
+        [previous_passed, dict(latest, name="last-cycle-name")], snapshots
+    )
+    assert [p["name"] for p in candidates] == [
+        "latest", "previous", "older", "kept-from-last-cycle"
+    ]
+
+
+def test_empty_subscription_is_valid_but_malformed_subscription_fails_closed():
+    class Response:
+        def __init__(self, text):
+            self.text = text
+        def raise_for_status(self):
+            pass
+    class Session:
+        def __init__(self, text):
+            self.text = text
+        def get(self, url, **kwargs):
+            return Response(self.text)
+
+    empty = publisher.fetch_upstream_subscriptions(
+        session=Session("proxies: []\n")
+    )
+    assert all(item["proxies"] == [] for item in empty)
+
+    class BadSession:
+        def get(self, url, **kwargs):
+            return Response("not: [valid")
+    import pytest
+    with pytest.raises(Exception):
+        publisher.fetch_upstream_subscriptions(session=BadSession())
