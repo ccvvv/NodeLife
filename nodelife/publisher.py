@@ -1,11 +1,10 @@
-"""Accumulate immutable AutoSubHub final releases and probe each unique proxy once per queue pass."""
+"""Re-probe the complete NodeLife pool every scheduled cycle."""
 from __future__ import annotations
 
 import concurrent.futures
 import json
 import os
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -25,7 +24,7 @@ TARGETS = ["https://www.google.com/generate_204", "https://www.cloudflare.com/cd
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_PATH = ROOT / "data" / "latest.yaml"
 QUEUE_STATE_PATH = ROOT / "data" / "queue_state.json"
-USER_AGENT = "NodeLife/0.2 (+https://github.com/ccvvv/NodeLife)"
+USER_AGENT = "NodeLife/0.3 (+https://github.com/ccvvv/NodeLife)"
 
 
 def filter_passing(
@@ -67,23 +66,29 @@ def filter_passing(
 
 
 def load_previous_output(path: Path) -> list[dict[str, Any]]:
+    """Load last passing pool; an intentionally empty published pool is valid."""
     if not path.exists():
         return []
-    return extract_proxies(yaml.safe_load(path.read_text(encoding="utf-8")), source="previous NodeLife output")
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(document, dict) or not isinstance(document.get("proxies"), list):
+        raise ValueError("previous NodeLife output must contain a proxies list")
+    proxies = document["proxies"]
+    if not proxies:
+        return []
+    return extract_proxies(document, source="previous NodeLife output")
 
 
 def render_subscription(proxies: list[dict[str, Any]]) -> str:
-    if not proxies:
-        raise ValueError("refusing to render an empty subscription")
+    """Render exactly this cycle's passing nodes, including a valid empty result."""
     return yaml.safe_dump({"proxies": proxies}, allow_unicode=True, sort_keys=False, default_flow_style=False)
 
 
 def load_queue_state(path: Path) -> dict[str, Any]:
-    """Load the durable upstream cursor and pending unique proxy configurations."""
+    """Load only the historical-release cursor; failed candidates are never persisted."""
     if not path.exists():
-        return {"schema_version": 1, "last_processed_commit": None, "pending": {}}
+        return {"schema_version": 2, "last_processed_commit": None}
     state = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(state, dict) or state.get("schema_version") != 1 or not isinstance(state.get("pending"), dict):
+    if not isinstance(state, dict) or state.get("schema_version") not in (1, 2):
         raise ValueError("queue state has an unsupported schema")
     cursor = state.get("last_processed_commit")
     if cursor is not None and (
@@ -91,16 +96,15 @@ def load_queue_state(path: Path) -> dict[str, Any]:
         or any(char not in "0123456789abcdef" for char in cursor.lower())
     ):
         raise ValueError("queue state commit cursor is invalid")
-    for fingerprint, proxy in state["pending"].items():
-        if not isinstance(proxy, dict) or canonical_fingerprint(proxy) != fingerprint:
-            raise ValueError("queue state contains an invalid pending proxy")
-    return state
+    # Migrate v1 by deliberately discarding its old pending/failure queue.
+    return {"schema_version": 2, "last_processed_commit": cursor}
 
 
 def save_queue_state(path: Path, state: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(state, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    clean = {"schema_version": 2, "last_processed_commit": state.get("last_processed_commit")}
+    temporary.write_text(json.dumps(clean, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     temporary.replace(path)
 
 
@@ -119,8 +123,7 @@ def fetch_upstream_snapshots(
         response = session.get(
             UPSTREAM_COMMITS_URL,
             params={"path": "final/latest.yaml", "sha": UPSTREAM_BRANCH, "per_page": 100, "page": page},
-            headers=headers,
-            timeout=30,
+            headers=headers, timeout=30,
         )
         response.raise_for_status()
         entries = response.json()
@@ -141,7 +144,7 @@ def fetch_upstream_snapshots(
         if page > 50:
             raise RuntimeError("upstream history exceeded the safe pagination limit")
     if not cursor_found:
-        raise RuntimeError("saved queue cursor was not found in upstream history; refusing to skip releases")
+        raise RuntimeError("saved history cursor was not found; refusing to skip releases")
 
     commit_shas.reverse()
     snapshots: list[dict[str, Any]] = []
@@ -157,21 +160,14 @@ def fetch_upstream_snapshots(
     return snapshots, newest_cursor
 
 
-def add_snapshots_to_pending(
-    snapshots: list[dict[str, Any]],
-    pending: dict[str, dict[str, Any]],
-    already_published: set[str],
-) -> int:
-    """Merge release batches into one fingerprint-deduplicated queue."""
-    added = 0
+def collect_cycle_candidates(
+    previous: list[dict[str, Any]], snapshots: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Union previous passing nodes and every newly discovered historical snapshot."""
+    historical: list[dict[str, Any]] = []
     for snapshot in snapshots:
-        for proxy in snapshot["proxies"]:
-            fingerprint = canonical_fingerprint(proxy)
-            if fingerprint in already_published or fingerprint in pending:
-                continue
-            pending[fingerprint] = proxy
-            added += 1
-    return added
+        historical.extend(snapshot["proxies"])
+    return merge_proxies(previous, historical)
 
 
 def atomic_write_text(path: Path, content: str) -> None:
@@ -184,44 +180,29 @@ def atomic_write_text(path: Path, content: str) -> None:
 def main() -> int:
     queue = load_queue_state(QUEUE_STATE_PATH)
     previous = load_previous_output(OUTPUT_PATH)
-    previous_fingerprints = {canonical_fingerprint(proxy) for proxy in previous}
-    snapshots, newest_cursor = fetch_upstream_snapshots(queue.get("last_processed_commit"))
 
-    pending = dict(queue["pending"])
-    added = add_snapshots_to_pending(snapshots, pending, previous_fingerprints)
+    # Fetch and validate upstream history before probing or changing published data.
+    snapshots, newest_cursor = fetch_upstream_snapshots(queue.get("last_processed_commit"))
+    candidates = collect_cycle_candidates(previous, snapshots)
     print(
-        f"QUEUE_SUMMARY new_releases={len(snapshots)} new_unique_nodes={added} "
-        f"pending_before_probe={len(pending)} already_published={len(previous)}",
+        f"CYCLE_POOL previous_passed={len(previous)} historical_releases={len(snapshots)} "
+        f"candidates_deduplicated={len(candidates)}",
         flush=True,
     )
 
-    passing: list[dict[str, Any]] = []
-    if pending:
-        passing = filter_passing(list(pending.values()), concurrency=2, batch_size=30)
-        for proxy in passing:
-            pending.pop(canonical_fingerprint(proxy), None)
+    # Every candidate is tested again on every cycle. Failed nodes are not retained.
+    passing = filter_passing(candidates, concurrency=2, batch_size=30) if candidates else []
+    atomic_write_text(OUTPUT_PATH, render_subscription(passing))
+    print(
+        f"PUBLISH_READY tested={len(candidates)} passed={len(passing)} "
+        f"discarded={len(candidates)-len(passing)} output=data/latest.yaml",
+        flush=True,
+    )
 
-    if passing:
-        published = merge_proxies(passing, previous)
-        atomic_write_text(OUTPUT_PATH, render_subscription(published))
-        print(f"PUBLISH_READY new_passed={len(passing)} total_published={len(published)} output=data/latest.yaml", flush=True)
-    elif previous:
-        print(f"NO_NEW_PASSES retained_existing={len(previous)} pending_for_retry={len(pending)}", flush=True)
-    elif pending:
-        print(f"NO_PASSES_YET pending_for_retry={len(pending)}; no empty subscription was published", flush=True)
-
-    # Save the subscription first. If the cursor write fails, a retry safely
-    # re-collects releases and skips identities already present in latest.yaml.
-    changed = newest_cursor != queue.get("last_processed_commit") or pending != queue["pending"]
-    if changed:
-        queue["last_processed_commit"] = newest_cursor
-        queue["pending"] = pending
-        queue["updated_at"] = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-        queue["last_discovered_release_count"] = len(snapshots)
-        save_queue_state(QUEUE_STATE_PATH, queue)
-        print(f"QUEUE_SAVED cursor={(newest_cursor or 'none')[:12]} pending={len(pending)}", flush=True)
-    else:
-        print(f"QUEUE_UNCHANGED pending={len(pending)}", flush=True)
+    # Advance history cursor only after the complete cycle output was safely written.
+    if newest_cursor != queue.get("last_processed_commit") or not QUEUE_STATE_PATH.exists():
+        save_queue_state(QUEUE_STATE_PATH, {"last_processed_commit": newest_cursor})
+        print(f"HISTORY_CURSOR_SAVED cursor={(newest_cursor or 'none')[:12]}", flush=True)
     return 0
 
 
@@ -230,5 +211,5 @@ if __name__ == "__main__":
         raise SystemExit(main())
     except Exception as error:
         detail = f" status={error.response.status_code} url={error.response.url}" if isinstance(error, requests.HTTPError) and error.response is not None else ""
-        print(f"NODELIFE_QUEUE_FAILED error_type={type(error).__name__}{detail}", file=sys.stderr, flush=True)
+        print(f"NODELIFE_CYCLE_FAILED error_type={type(error).__name__}{detail}", file=sys.stderr, flush=True)
         raise SystemExit(1)
