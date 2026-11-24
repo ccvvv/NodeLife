@@ -11,39 +11,27 @@ def node(name="node-a", server="example.com", port=443):
 def test_queue_state_defaults_and_round_trip(tmp_path):
     path = tmp_path / "queue_state.json"
     state = publisher.load_queue_state(path)
-    assert state == {"schema_version": 1, "last_processed_commit": None, "pending": {}}
-    state["pending"] = {publisher.canonical_fingerprint(node()): node()}
+    assert state == {"schema_version": 2, "last_processed_commit": None}
     publisher.save_queue_state(path, state)
     assert publisher.load_queue_state(path) == state
 
 
-def test_queue_state_rejects_fingerprint_mismatch(tmp_path):
+def test_queue_state_migrates_v1_and_discards_legacy_pending(tmp_path):
     path = tmp_path / "queue_state.json"
-    path.write_text(json.dumps({"schema_version": 1, "last_processed_commit": None, "pending": {"wrong": node()}}))
-    with pytest.raises(ValueError):
+    path.write_text(json.dumps({
+        "schema_version": 1, "last_processed_commit": "a" * 40,
+        "pending": {"old-failure": node()},
+    }))
+    assert publisher.load_queue_state(path) == {
+        "schema_version": 2, "last_processed_commit": "a" * 40,
+    }
+
+
+def test_queue_state_rejects_invalid_cursor(tmp_path):
+    path = tmp_path / "queue_state.json"
+    path.write_text(json.dumps({"schema_version": 2, "last_processed_commit": "bad"}))
+    with pytest.raises(ValueError, match="cursor"):
         publisher.load_queue_state(path)
-
-
-def test_snapshots_accumulate_and_deduplicate_across_releases():
-    pending = {}
-    added = publisher.add_snapshots_to_pending(
-        [{"proxies": [node("first")]},
-         {"proxies": [node("renamed"), node("second", server="second.example")]}],
-        pending, set(),
-    )
-    assert added == 2
-    assert [item["name"] for item in pending.values()] == ["first", "second"]
-
-
-def test_already_published_identity_is_not_queued_again():
-    existing = node("published")
-    fingerprint = publisher.canonical_fingerprint(existing)
-    pending = {}
-    added = publisher.add_snapshots_to_pending(
-        [{"proxies": [node("renamed-same-config")]}], pending, {fingerprint}
-    )
-    assert added == 0
-    assert pending == {}
 
 
 def test_fetch_upstream_snapshots_collects_all_releases_oldest_first():
@@ -93,3 +81,16 @@ def test_fetch_upstream_snapshots_fails_closed_if_cursor_disappears():
             return Response()
     with pytest.raises(RuntimeError, match="cursor"):
         publisher.fetch_upstream_snapshots("2" * 40, session=Session())
+
+
+def test_fetch_current_latest_runs_independently_of_history_cursor():
+    class Response:
+        text = "proxies:\n- name: current\n  type: ss\n  server: current.example\n  port: 443\n  cipher: aes-128-gcm\n  password: test-only\n"
+        def raise_for_status(self):
+            pass
+    class Session:
+        def get(self, url, **kwargs):
+            assert url.endswith("/published-subscriptions/final/latest.yaml")
+            return Response()
+    current = publisher.fetch_current_latest(session=Session())
+    assert [p["name"] for p in current["proxies"]] == ["current"]
