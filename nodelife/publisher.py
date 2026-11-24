@@ -13,7 +13,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from nodelife.identity import canonical_fingerprint, extract_proxies, merge_proxies
+from nodelife.identity import extract_proxies, merge_proxies
 from nodelife.probe import probe_one_detailed
 
 UPSTREAM_REPOSITORY = "ccvvv/AutoSubHub"
@@ -24,7 +24,7 @@ TARGETS = ["https://www.google.com/generate_204", "https://www.cloudflare.com/cd
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_PATH = ROOT / "data" / "latest.yaml"
 QUEUE_STATE_PATH = ROOT / "data" / "queue_state.json"
-USER_AGENT = "NodeLife/0.3 (+https://github.com/ccvvv/NodeLife)"
+USER_AGENT = "NodeLife/0.4 (+https://github.com/ccvvv/NodeLife)"
 
 
 def filter_passing(
@@ -32,7 +32,7 @@ def filter_passing(
     concurrency: int = 2, startup_timeout: float = 8,
     request_timeout: float = 10, batch_size: int = 30,
 ) -> list[dict[str, Any]]:
-    """Return passing proxies in source order; never log proxy identity."""
+    """Return this cycle's passing proxies in source order."""
     if concurrency < 1 or concurrency > 20:
         raise ValueError("concurrency must be between 1 and 20")
     if batch_size < 1 or batch_size > 100:
@@ -66,25 +66,26 @@ def filter_passing(
 
 
 def load_previous_output(path: Path) -> list[dict[str, Any]]:
-    """Load last passing pool; an intentionally empty published pool is valid."""
+    """Load the previous passing pool; an intentionally empty pool is valid."""
     if not path.exists():
         return []
     document = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(document, dict) or not isinstance(document.get("proxies"), list):
         raise ValueError("previous NodeLife output must contain a proxies list")
-    proxies = document["proxies"]
-    if not proxies:
+    if not document["proxies"]:
         return []
     return extract_proxies(document, source="previous NodeLife output")
 
 
 def render_subscription(proxies: list[dict[str, Any]]) -> str:
-    """Render exactly this cycle's passing nodes, including a valid empty result."""
-    return yaml.safe_dump({"proxies": proxies}, allow_unicode=True, sort_keys=False, default_flow_style=False)
+    """Render exactly this cycle's passing nodes; an empty result is valid."""
+    return yaml.safe_dump(
+        {"proxies": proxies}, allow_unicode=True, sort_keys=False, default_flow_style=False
+    )
 
 
 def load_queue_state(path: Path) -> dict[str, Any]:
-    """Load only the historical-release cursor; failed candidates are never persisted."""
+    """Load only the history cursor and intentionally discard legacy pending queues."""
     if not path.exists():
         return {"schema_version": 2, "last_processed_commit": None}
     state = json.loads(path.read_text(encoding="utf-8"))
@@ -96,7 +97,6 @@ def load_queue_state(path: Path) -> dict[str, Any]:
         or any(char not in "0123456789abcdef" for char in cursor.lower())
     ):
         raise ValueError("queue state commit cursor is invalid")
-    # Migrate v1 by deliberately discarding its old pending/failure queue.
     return {"schema_version": 2, "last_processed_commit": cursor}
 
 
@@ -108,6 +108,27 @@ def save_queue_state(path: Path, state: dict[str, Any]) -> None:
     temporary.replace(path)
 
 
+def _github_headers() -> dict[str, str]:
+    headers = {"User-Agent": USER_AGENT, "Accept": "application/vnd.github+json"}
+    token = os.environ.get("NODELIFE_GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = "Bearer " + token
+    return headers
+
+
+def fetch_current_latest(*, session: Any = requests) -> dict[str, Any]:
+    """Fetch the complete current branch snapshot on every run, independent of the cursor."""
+    response = session.get(
+        f"{UPSTREAM_RAW_URL}/{UPSTREAM_BRANCH}/final/latest.yaml",
+        headers={"User-Agent": USER_AGENT}, timeout=30,
+    )
+    response.raise_for_status()
+    proxies = extract_proxies(
+        yaml.safe_load(response.text), source="AutoSubHub current final snapshot", allow_empty=True
+    )
+    return {"commit": "current-branch", "proxies": proxies}
+
+
 def fetch_upstream_snapshots(
     last_processed_commit: str | None, *, session: Any = requests,
 ) -> tuple[list[dict[str, Any]], str | None]:
@@ -116,14 +137,10 @@ def fetch_upstream_snapshots(
     cursor_found = last_processed_commit is None
     page = 1
     while True:
-        headers = {"User-Agent": USER_AGENT, "Accept": "application/vnd.github+json"}
-        token = os.environ.get("NODELIFE_GITHUB_TOKEN")
-        if token:
-            headers["Authorization"] = "Bearer " + token
         response = session.get(
             UPSTREAM_COMMITS_URL,
             params={"path": "final/latest.yaml", "sha": UPSTREAM_BRANCH, "per_page": 100, "page": page},
-            headers=headers, timeout=30,
+            headers=_github_headers(), timeout=30,
         )
         response.raise_for_status()
         entries = response.json()
@@ -141,8 +158,7 @@ def fetch_upstream_snapshots(
         if stop or len(entries) < 100:
             break
         page += 1
-        if page > 50:
-            raise RuntimeError("upstream history exceeded the safe pagination limit")
+
     if not cursor_found:
         raise RuntimeError("saved history cursor was not found; refusing to skip releases")
 
@@ -154,7 +170,10 @@ def fetch_upstream_snapshots(
             headers={"User-Agent": USER_AGENT}, timeout=30,
         )
         response.raise_for_status()
-        proxies = extract_proxies(yaml.safe_load(response.text), source=f"AutoSubHub final snapshot {sha[:12]}")
+        proxies = extract_proxies(
+            yaml.safe_load(response.text), source=f"AutoSubHub final snapshot {sha[:12]}",
+            allow_empty=True,
+        )
         snapshots.append({"commit": sha, "proxies": proxies})
     newest_cursor = commit_shas[-1] if commit_shas else last_processed_commit
     return snapshots, newest_cursor
@@ -162,12 +181,13 @@ def fetch_upstream_snapshots(
 
 def collect_cycle_candidates(
     previous: list[dict[str, Any]], snapshots: list[dict[str, Any]],
+    current_latest: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    """Union previous passing nodes and every newly discovered historical snapshot."""
-    historical: list[dict[str, Any]] = []
+    """Union current latest, every unseen history revision, and last cycle's passing pool."""
+    upstream: list[dict[str, Any]] = list(current_latest["proxies"])
     for snapshot in snapshots:
-        historical.extend(snapshot["proxies"])
-    return merge_proxies(previous, historical)
+        upstream.extend(snapshot["proxies"])
+    return merge_proxies(upstream, previous)
 
 
 def atomic_write_text(path: Path, content: str) -> None:
@@ -181,16 +201,18 @@ def main() -> int:
     queue = load_queue_state(QUEUE_STATE_PATH)
     previous = load_previous_output(OUTPUT_PATH)
 
-    # Fetch and validate upstream history before probing or changing published data.
+    # Both sources are required: latest is fetched every cycle; history fills short-lived gaps.
+    current_latest = fetch_current_latest()
     snapshots, newest_cursor = fetch_upstream_snapshots(queue.get("last_processed_commit"))
-    candidates = collect_cycle_candidates(previous, snapshots)
+    candidates = collect_cycle_candidates(previous, snapshots, current_latest)
     print(
-        f"CYCLE_POOL previous_passed={len(previous)} historical_releases={len(snapshots)} "
+        f"CYCLE_POOL current_latest={len(current_latest['proxies'])} "
+        f"historical_releases={len(snapshots)} previous_passed={len(previous)} "
         f"candidates_deduplicated={len(candidates)}",
         flush=True,
     )
 
-    # Every candidate is tested again on every cycle. Failed nodes are not retained.
+    # Every candidate is tested again. Failed nodes are not retained in the output.
     passing = filter_passing(candidates, concurrency=2, batch_size=30) if candidates else []
     atomic_write_text(OUTPUT_PATH, render_subscription(passing))
     print(
@@ -199,10 +221,10 @@ def main() -> int:
         flush=True,
     )
 
-    # Advance history cursor only after the complete cycle output was safely written.
-    if newest_cursor != queue.get("last_processed_commit") or not QUEUE_STATE_PATH.exists():
-        save_queue_state(QUEUE_STATE_PATH, {"last_processed_commit": newest_cursor})
-        print(f"HISTORY_CURSOR_SAVED cursor={(newest_cursor or 'none')[:12]}", flush=True)
+    # Persist the cursor only after a complete output write. Always rewrite to migrate v1 state
+    # and permanently remove its obsolete pending/failure queue.
+    save_queue_state(QUEUE_STATE_PATH, {"last_processed_commit": newest_cursor})
+    print(f"HISTORY_CURSOR_SAVED cursor={(newest_cursor or 'none')[:12]}", flush=True)
     return 0
 
 
