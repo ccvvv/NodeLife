@@ -48,23 +48,20 @@ jobs:
           gzip -dc /tmp/mihomo.gz > /usr/local/bin/mihomo
           chmod +x /usr/local/bin/mihomo
           mihomo -v
-      - name: Fetch current and unseen historical releases, re-probe the complete deduplicated pool
-        env:
-          NODELIFE_GITHUB_TOKEN: ${{ github.token }}
+      - name: Download AutoSubHub subscriptions and re-probe the complete deduplicated pool
         run: python -m nodelife.publisher
       - name: Generate V2RayTun share-link subscription
         run: python -m scripts.v2raytun_subscription
-      - name: Publish refreshed subscription and history cursor
+      - name: Publish refreshed subscriptions
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/queue_state.json
           if [ -f data/latest.yaml ]; then git add data/latest.yaml; fi
           if [ -f data/v2raytun.txt ]; then git add data/v2raytun.txt; fi
           if git diff --cached --quiet; then
             echo "Queue and subscription unchanged; no commit needed."
           else
-            git commit -m "Process queued final subscription releases"
+            git commit -m "Publish refreshed NodeLife recheck subscriptions"
             for attempt in 1 2 3; do
               echo "Push attempt ${attempt}/3"
               git fetch origin main
