@@ -48,7 +48,7 @@ def test_convert_file_writes_base64_subscription(tmp_path: Path):
 
 def test_convert_empty_passing_pool_writes_empty_subscription(tmp_path: Path):
     source, output = tmp_path / "empty.yaml", tmp_path / "empty.txt"
-    source.write_text("proxies: []\\n", encoding="utf-8")
+    source.write_text("proxies: []\n", encoding="utf-8")
     included, skipped = convert_file(source, output)
     assert (included, skipped) == (0, 0)
     assert output.read_text(encoding="ascii") == ""
