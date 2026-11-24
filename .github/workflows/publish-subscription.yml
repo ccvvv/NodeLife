@@ -12,6 +12,8 @@ on:
   schedule:
     - cron: "17 */6 * * *"
   workflow_dispatch:
+  repository_dispatch:
+    types: [auto-subhub-final-published]
 
 permissions:
   contents: write
