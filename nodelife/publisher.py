@@ -2,8 +2,6 @@
 from __future__ import annotations
 
 import concurrent.futures
-import json
-import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -18,12 +16,10 @@ from nodelife.probe import probe_one_detailed
 
 UPSTREAM_REPOSITORY = "ccvvv/AutoSubHub"
 UPSTREAM_BRANCH = "published-subscriptions"
-UPSTREAM_COMMITS_URL = f"https://api.github.com/repos/{UPSTREAM_REPOSITORY}/commits"
 UPSTREAM_RAW_URL = f"https://raw.githubusercontent.com/{UPSTREAM_REPOSITORY}"
 TARGETS = ["https://www.google.com/generate_204", "https://www.cloudflare.com/cdn-cgi/trace"]
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_PATH = ROOT / "data" / "latest.yaml"
-QUEUE_STATE_PATH = ROOT / "data" / "queue_state.json"
 USER_AGENT = "NodeLife/0.4 (+https://github.com/ccvvv/NodeLife)"
 
 
@@ -84,107 +80,27 @@ def render_subscription(proxies: list[dict[str, Any]]) -> str:
     )
 
 
-def load_queue_state(path: Path) -> dict[str, Any]:
-    """Load only the history cursor and intentionally discard legacy pending queues."""
-    if not path.exists():
-        return {"schema_version": 2, "last_processed_commit": None}
-    state = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(state, dict) or state.get("schema_version") not in (1, 2):
-        raise ValueError("queue state has an unsupported schema")
-    cursor = state.get("last_processed_commit")
-    if cursor is not None and (
-        not isinstance(cursor, str) or len(cursor) != 40
-        or any(char not in "0123456789abcdef" for char in cursor.lower())
-    ):
-        raise ValueError("queue state commit cursor is invalid")
-    return {"schema_version": 2, "last_processed_commit": cursor}
-
-
-def save_queue_state(path: Path, state: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    clean = {"schema_version": 2, "last_processed_commit": state.get("last_processed_commit")}
-    temporary.write_text(json.dumps(clean, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    temporary.replace(path)
-
-
-def _github_headers() -> dict[str, str]:
-    headers = {"User-Agent": USER_AGENT, "Accept": "application/vnd.github+json"}
-    token = os.environ.get("NODELIFE_GITHUB_TOKEN")
-    if token:
-        headers["Authorization"] = "Bearer " + token
-    return headers
-
-
-def fetch_current_latest(*, session: Any = requests) -> dict[str, Any]:
-    """Fetch the complete current branch snapshot on every run, independent of the cursor."""
-    response = session.get(
-        f"{UPSTREAM_RAW_URL}/{UPSTREAM_BRANCH}/final/latest.yaml",
-        headers={"User-Agent": USER_AGENT}, timeout=30,
-    )
-    response.raise_for_status()
-    proxies = extract_proxies(
-        yaml.safe_load(response.text), source="AutoSubHub current final snapshot", allow_empty=True
-    )
-    return {"commit": "current-branch", "proxies": proxies}
-
-
-def fetch_upstream_snapshots(
-    last_processed_commit: str | None, *, session: Any = requests,
-) -> tuple[list[dict[str, Any]], str | None]:
-    """Read every final/latest.yaml revision after the saved cursor, oldest first."""
-    commit_shas: list[str] = []
-    cursor_found = last_processed_commit is None
-    page = 1
-    while True:
-        response = session.get(
-            UPSTREAM_COMMITS_URL,
-            params={"path": "final/latest.yaml", "sha": UPSTREAM_BRANCH, "per_page": 100, "page": page},
-            headers=_github_headers(), timeout=30,
-        )
-        response.raise_for_status()
-        entries = response.json()
-        if not isinstance(entries, list):
-            raise RuntimeError("upstream commit history response is malformed")
-        stop = False
-        for entry in entries:
-            sha = entry.get("sha") if isinstance(entry, dict) else None
-            if not isinstance(sha, str) or len(sha) != 40:
-                raise RuntimeError("upstream commit history contains an invalid SHA")
-            if last_processed_commit and sha == last_processed_commit:
-                cursor_found, stop = True, True
-                break
-            commit_shas.append(sha)
-        if stop or len(entries) < 100:
-            break
-        page += 1
-
-    if not cursor_found:
-        raise RuntimeError("saved history cursor was not found; refusing to skip releases")
-
-    commit_shas.reverse()
+def fetch_upstream_subscriptions(*, session: Any = requests) -> list[dict[str, Any]]:
+    """Fetch the three published AutoSubHub subscription snapshots over HTTPS only."""
     snapshots: list[dict[str, Any]] = []
-    for sha in commit_shas:
-        response = session.get(
-            f"{UPSTREAM_RAW_URL}/{sha}/final/latest.yaml",
-            headers={"User-Agent": USER_AGENT}, timeout=30,
-        )
+    for filename in ("latest.yaml", "previous.yaml", "older.yaml"):
+        url = f"{UPSTREAM_RAW_URL}/{UPSTREAM_BRANCH}/final/{filename}"
+        response = session.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
         response.raise_for_status()
         proxies = extract_proxies(
-            yaml.safe_load(response.text), source=f"AutoSubHub final snapshot {sha[:12]}",
+            yaml.safe_load(response.text),
+            source=f"AutoSubHub final/{filename}",
             allow_empty=True,
         )
-        snapshots.append({"commit": sha, "proxies": proxies})
-    newest_cursor = commit_shas[-1] if commit_shas else last_processed_commit
-    return snapshots, newest_cursor
+        snapshots.append({"source": filename, "proxies": proxies})
+    return snapshots
 
 
 def collect_cycle_candidates(
     previous: list[dict[str, Any]], snapshots: list[dict[str, Any]],
-    current_latest: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    """Union current latest, every unseen history revision, and last cycle's passing pool."""
-    upstream: list[dict[str, Any]] = list(current_latest["proxies"])
+    """Union latest/previous/older subscription snapshots and last cycle's passing pool."""
+    upstream: list[dict[str, Any]] = []
     for snapshot in snapshots:
         upstream.extend(snapshot["proxies"])
     return merge_proxies(upstream, previous)
@@ -198,21 +114,22 @@ def atomic_write_text(path: Path, content: str) -> None:
 
 
 def main() -> int:
-    queue = load_queue_state(QUEUE_STATE_PATH)
     previous = load_previous_output(OUTPUT_PATH)
 
-    # Both sources are required: latest is fetched every cycle; history fills short-lived gaps.
-    current_latest = fetch_current_latest()
-    snapshots, newest_cursor = fetch_upstream_snapshots(queue.get("last_processed_commit"))
-    candidates = collect_cycle_candidates(previous, snapshots, current_latest)
+    # Candidate input is subscription-only: no Git history/API calls to AutoSubHub.
+    snapshots = fetch_upstream_subscriptions()
+    candidates = collect_cycle_candidates(previous, snapshots)
+    counts = " ".join(
+        f"{item['source'].replace('.yaml', '')}={len(item['proxies'])}"
+        for item in snapshots
+    )
     print(
-        f"CYCLE_POOL current_latest={len(current_latest['proxies'])} "
-        f"historical_releases={len(snapshots)} previous_passed={len(previous)} "
+        f"CYCLE_POOL {counts} previous_passed={len(previous)} "
         f"candidates_deduplicated={len(candidates)}",
         flush=True,
     )
 
-    # Every candidate is tested again. Failed nodes are not retained in the output.
+    # Re-test the complete merged pool every cycle; publish only this cycle's passes.
     passing = filter_passing(candidates, concurrency=2, batch_size=30) if candidates else []
     atomic_write_text(OUTPUT_PATH, render_subscription(passing))
     print(
@@ -220,11 +137,6 @@ def main() -> int:
         f"discarded={len(candidates)-len(passing)} output=data/latest.yaml",
         flush=True,
     )
-
-    # Persist the cursor only after a complete output write. Always rewrite to migrate v1 state
-    # and permanently remove its obsolete pending/failure queue.
-    save_queue_state(QUEUE_STATE_PATH, {"last_processed_commit": newest_cursor})
-    print(f"HISTORY_CURSOR_SAVED cursor={(newest_cursor or 'none')[:12]}", flush=True)
     return 0
 
 
