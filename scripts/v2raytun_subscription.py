@@ -148,11 +148,12 @@ def convert_file(source: Path = SOURCE, output: Path = OUTPUT) -> tuple[int, int
         raise ValueError("latest.yaml must contain a proxies list")
     links = [link for proxy in proxies if isinstance(proxy, dict)
              if (link := proxy_to_link(proxy)) is not None]
-    if not links:
+    if not links and proxies:
         raise ValueError("no V2RayTun-compatible proxy links could be generated")
-    # V2Ray-style subscription: base64 of newline-separated share links.
+    # An empty passing pool is a valid empty subscription, not a conversion failure.
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(base64.b64encode(("\n".join(links) + "\n").encode("utf-8")).decode("ascii") + "\n", encoding="ascii")
+    encoded = base64.b64encode(("\n".join(links) + ("\n" if links else "")).encode("utf-8")).decode("ascii")
+    output.write_text(encoded + ("\n" if encoded else ""), encoding="ascii")
     return len(links), len(proxies) - len(links)
 
 
