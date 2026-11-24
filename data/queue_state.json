@@ -1,6 +1,6 @@
 {
-  "last_discovered_release_count": 0,
-  "last_processed_commit": "c2907317811379b73432fb3fbc3b0dcdebb30d69",
+  "last_discovered_release_count": 2,
+  "last_processed_commit": "f53e78378fb90c0ec13c729a270e5d6176303c6c",
   "pending": {
     "013c7496ea6561cabf52aec7498f61781fd94ca67bf1ea4d3a7dae8a82274622": {
       "name": "🇹🇼 🇨🇳 台湾 | TWN #1 [高速]",
@@ -99,6 +99,17 @@
       "server": "82.38.31.162",
       "sub_tag": "B007-260618",
       "type": "ss",
+      "udp": true
+    },
+    "08868382d0509cb21236deba8ff19ef5732fc5701c70ba50f36dd2c11e791b8a": {
+      "client-fingerprint": "chrome",
+      "name": "🇭🇰 香港|@ripaojiedian [高速]",
+      "password": "0324fbc29561",
+      "port": 443,
+      "server": "5641sdds.df6h451rh.xin",
+      "skip-cert-verify": true,
+      "sni": "images.ctfassets.net",
+      "type": "anytls",
       "udp": true
     },
     "0896438e010d6a04cbcb8d3cd46daefcf0729ffc2e5cbe5390ef7e07cd80ad1f": {
@@ -276,6 +287,14 @@
       "udp": true,
       "username": "AJ3d9gJw"
     },
+    "0e47c92ae26fb2b10cd55738418fd9738c2480a37d10797fca0f904635d623eb": {
+      "cipher": "aes-256-gcm",
+      "name": "nl|1cc0|puddincat07@Telegram [高速]",
+      "password": "ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=",
+      "port": 19999,
+      "server": "202.50.253.36",
+      "type": "ss"
+    },
     "10e78d280cb06ee83fcb3cb959b347887506e1c9d8a69c6dd0aaf5ed84aa460c": {
       "ip": "172.16.0.2/32",
       "mtu": 1280,
@@ -308,6 +327,16 @@
       "name": "🇺🇸US_150|664KB/s|R002-260618 [高速]",
       "port": 8090,
       "server": "24.142.229.178",
+      "skip-cert-verify": true,
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true
+    },
+    "1371d7facb24dbb62d129f44fbc86f1100ffa0659d4ee5f50b58028c31a57ba7": {
+      "name": "🇸🇬SG_39|609KB/s|R002-260618 [高速]",
+      "port": 9443,
+      "server": "152.233.9.239",
       "skip-cert-verify": true,
       "sub_tag": "R002-260618",
       "tls": true,
@@ -841,23 +870,6 @@
       "udp": true,
       "uuid": "66c78912-4e2d-41dc-8742-aaae2590804e"
     },
-    "29891f548257492739439618befd4cf1e59e0845e555108f8f96e3a82e8f9d06": {
-      "alterId": "0",
-      "cipher": "auto",
-      "name": "🇺🇸US_436|332KB/s|K001-260618",
-      "network": "tcp",
-      "packet-encoding": "xudp",
-      "port": 1270,
-      "server": "38.91.100.16",
-      "servername": "xmfhlpy.com",
-      "skip-cert-verify": false,
-      "sub_tag": "K001-260618",
-      "tls": true,
-      "type": "vmess",
-      "udp": true,
-      "uuid": "5c040f1d-45db-43bd-8d46-e4950e433735",
-      "xudp": true
-    },
     "2a38cb0737eab171ea289fc0a7011e5fc88dfb789a3111a2cb0ca08ee037ecb1": {
       "name": "🇷🇴RO_32|1.5MB/s|R002-260618 [高速]",
       "port": 9002,
@@ -876,16 +888,6 @@
       "server": "185.135.86.175",
       "sub_tag": "X001-260618",
       "type": "ss",
-      "udp": true
-    },
-    "2af59194cbc10878c1ca0fbb9a9ec36214ebc797503cbcaf1c17d7fa37742ee0": {
-      "name": "🇬🇧GB_3|1.0MB/s|R002-260618 [高速]",
-      "port": 443,
-      "server": "185.164.138.156",
-      "skip-cert-verify": true,
-      "sub_tag": "R002-260618",
-      "tls": true,
-      "type": "http",
       "udp": true
     },
     "2afd52a37d623133ff25857a1128cfad069cdc2b60393f9f3cd582e0fe50707a": {
@@ -945,12 +947,11 @@
       "udp": true,
       "username": "null"
     },
-    "31a8661c0de3d69f553f9e5d076ee64509d020e61b8f9af2d3d9d691694f7125": {
-      "name": "🇫🇷FR_5|1.6MB/s|R002-260618 [高速]",
+    "3184e83a75348fdfee56054b2b285efeffc36310a1542a566442ededf3d72fa8": {
+      "name": "🇯🇵JP_1|124KB/s|R002-260618 [普通]",
       "port": 443,
-      "server": "103.82.101.43",
-      "skip-cert-verify": true,
-      "sni": "76d1d3ecadca44efa2339867d7dfc9a1-8e928736d0f8dbdc.apache-iv.com",
+      "server": "fan.571589.xyz",
+      "sni": "fan.571589.xyz",
       "sub_tag": "R002-260618",
       "tls": true,
       "type": "http",
@@ -1039,17 +1040,13 @@
         "path": "/api/de3/sync"
       }
     },
-    "38f5c5d585a2aaf7eea8a91a4a10b1a0f27985baa543272ec49b1aab3e48e119": {
-      "name": "🇳🇱NL_5|1.7MB/s|R002-260618 [高速]",
-      "port": 443,
-      "server": "185.140.209.235",
-      "skip-cert-verify": true,
-      "sni": "482c8436a1f7c908b48a1757abb5dd79-ce85c45206570905.apache-iv.com",
-      "sub_tag": "R002-260618",
-      "tls": true,
-      "type": "http",
-      "udp": true,
-      "x-toolall-mihomo": true
+    "3865b886e06d2214458cd43e6538d07fdc89513070c2e0463750156d385384a7": {
+      "cipher": "aes-256-gcm",
+      "name": "nl|2d27|puddincat07@Telegram [普通]",
+      "password": "ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=",
+      "port": 19999,
+      "server": "202.50.253.99",
+      "type": "ss"
     },
     "395e12451e0e2c606bfd4c1c0a68ee6cb2c42c83a44f4af58ae3d41a909fb106": {
       "name": "🇷🇴RO_58|1.3MB/s|R002-260618 [高速]",
@@ -1109,27 +1106,6 @@
         "path": "/cctv13.m3u8"
       },
       "xudp": true
-    },
-    "3d20d71c25e0609145bb5e910d5aae97a79c6a2d259b8f6d8ed8ab662d939030": {
-      "alpn": [
-        "h2",
-        "http/1.1"
-      ],
-      "client-fingerprint": "edge",
-      "name": "🇩🇪 德国 | DEU #2-2 [高速]",
-      "network": "xhttp",
-      "port": 443,
-      "server": "heatherfield.moltex.click",
-      "servername": "heatherfield.moltex.click",
-      "tls": true,
-      "type": "vless",
-      "udp": true,
-      "uuid": "0b6a7fe0-206b-4071-9f96-cd397d1ec01a",
-      "xhttp-opts": {
-        "host": "heatherfield.moltex.click",
-        "mode": "auto",
-        "path": "/api/de6/sync"
-      }
     },
     "3dbb27238fa540a945c3c06477855d6d9870916d4209250f068f307096091366": {
       "name": "🇺🇸US_207|619KB/s|R002-260618 [高速]",
@@ -1253,15 +1229,6 @@
       "type": "vless",
       "uuid": "cda0862a-0f87-4be9-8ed8-1d0c9e382839"
     },
-    "41e72fb4749594eeda7f3a36ed0680444c420bf720e476526abb6657b324209e": {
-      "name": "US_speednode_0027 [高速]",
-      "port": 443,
-      "server": "172.64.69.89",
-      "skip-cert-verify": true,
-      "tls": true,
-      "type": "http",
-      "udp": true
-    },
     "42e1acae4056caa34b0aeb80b3af10b09ce52ea1d730c0dc097c99161da166da": {
       "name": "🇮🇪IE_3|2.4MB/s|R002-260618 [高速]",
       "password": "null",
@@ -1285,23 +1252,6 @@
       "sni": "polandchuzhoi.site",
       "type": "hysteria2",
       "udp": true
-    },
-    "43a8de44b429a9c7b14737f43c0e3a2b0ff5af506774e246d506cf5d458d604f": {
-      "client-fingerprint": "chrome",
-      "flow": "xtls-rprx-vision",
-      "name": "vless-1853340423",
-      "network": "tcp",
-      "port": 23576,
-      "reality-opts": {
-        "public-key": "1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s",
-        "short-id": "01"
-      },
-      "server": "15.204.97.206",
-      "servername": "fuck.rkn",
-      "tls": true,
-      "type": "vless",
-      "udp": true,
-      "uuid": "48ff2b70-e180-582f-8866-d9a2edeed5f5"
     },
     "43c1eca10f42bf1a3980afa62a2cf799d9b0d6afba7653c38eef4274d75c7f7b": {
       "name": "🇯🇵JP_3|99KB/s|P002-260618 [高速]",
@@ -1352,6 +1302,14 @@
       "type": "http",
       "udp": true
     },
+    "463d6dab83cedcfd05139f049c44824590cf51aa099a6dc31dd50c14fd951e79": {
+      "cipher": "aes-256-gcm",
+      "name": "nl|5013|puddincat07@Telegram [高速]",
+      "password": "ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=",
+      "port": 19999,
+      "server": "202.50.253.90",
+      "type": "ss"
+    },
     "464b3437191d8cf087ca48ec8101648e5efd51396df6925757801acfb530cd3b": {
       "name": "🇹🇭TH_4|551KB/s|R002-260618",
       "password": "mpbK00Pl",
@@ -1371,6 +1329,27 @@
       "type": "socks5",
       "udp": true,
       "username": "JPjarpW3"
+    },
+    "46587bc7a2e8fd8a0fc495c4eff2ce0efbcb1dab420b01a8b5ed0017f7241f5a": {
+      "client-fingerprint": "firefox",
+      "name": "Igareck Node 002 | 🇫🇮 Finland， Helsinki | [BL] [高速]",
+      "network": "xhttp",
+      "port": 443,
+      "reality-opts": {
+        "public-key": "_yJGJ5q-8IxTuWFcoy5wpKKYtk9p9q4lQ6svfXC1IUU",
+        "short-id": "621290c77645b731"
+      },
+      "server": "196.196.208.22",
+      "servername": "9303d6x.fi-p1b.h1clayd.click",
+      "tls": true,
+      "type": "vless",
+      "udp": true,
+      "uuid": "cae99415-10a6-4317-81bd-19a4586b5d76",
+      "xhttp-opts": {
+        "host": "9303d6x.fi-p1b.h1clayd.click",
+        "mode": "auto",
+        "path": "/f57a81c99fea"
+      }
     },
     "471a8ee4bad98cda1faa539b099a6614a8d4698eda1a8cd4b7e56d4b5d69a697": {
       "client-fingerprint": "firefox",
@@ -1431,6 +1410,17 @@
       "type": "http",
       "udp": true
     },
+    "4832540fa4bcbd6bb9afcaa051e1fd0ce524792f995562a7ddf368cec6b89b80": {
+      "name": "🇺🇸US_92|326KB/s|R002-260618 [普通]",
+      "port": 443,
+      "server": "38.28.193.1",
+      "skip-cert-verify": true,
+      "sni": "38.28.193.1",
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true
+    },
     "49424bf980404bfe58b5407304311e92182085c32d89faa9244ddc3165503487": {
       "name": "🇦🇺AU_6|426KB/s|P002-260618 [高速]",
       "password": "None",
@@ -1457,6 +1447,17 @@
       "port": 8090,
       "server": "83.206.1.225",
       "skip-cert-verify": true,
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true
+    },
+    "4b9bb8749abb6f2fd292b1b6d4c3d1ef7ccf4e6c8da2d3c0f823c0f764c2683d": {
+      "name": "🇺🇸US_370|337KB/s|R002-260618 [普通]",
+      "port": 443,
+      "server": "fan.365747.xyz",
+      "skip-cert-verify": true,
+      "sni": "fan.365747.xyz",
       "sub_tag": "R002-260618",
       "tls": true,
       "type": "http",
@@ -1490,27 +1491,6 @@
       "port": 19999,
       "server": "202.50.253.54",
       "type": "ss"
-    },
-    "4eb4c00954af8e1abbebe15c2ca7814b6107c02467dda43c2d34a398ffe7357f": {
-      "alpn": [
-        "h2",
-        "http/1.1"
-      ],
-      "client-fingerprint": "edge",
-      "name": "🇩🇪 德国 | DEU #19 [高速]",
-      "network": "xhttp",
-      "port": 443,
-      "server": "palette.merlano.monster",
-      "servername": "palette.merlano.monster",
-      "tls": true,
-      "type": "vless",
-      "udp": true,
-      "uuid": "0b6a7fe0-206b-4071-9f96-cd397d1ec01a",
-      "xhttp-opts": {
-        "host": "palette.merlano.monster",
-        "mode": "auto",
-        "path": "/api/de7/sync"
-      }
     },
     "4f409042c37c118da907f7dc3da191c050c944681161e78731e5a8c02d8d8cbd": {
       "alterId": 0,
@@ -1659,6 +1639,17 @@
       "uuid": "5c040f1d-45db-43bd-8d46-e4950e433735",
       "xudp": true
     },
+    "52788c3d3aefebf797ba6adb48fd054b313e6d23595f7aad4a98abba5be091e1": {
+      "client-fingerprint": "chrome",
+      "name": "🇭🇰 香港 | HKG 4 [高速]",
+      "password": "2902c46c8493",
+      "port": 443,
+      "server": "ibsdsf.df6h451rh.xin",
+      "skip-cert-verify": true,
+      "sni": "docs.microsoft.com",
+      "type": "anytls",
+      "udp": true
+    },
     "531eeecb30f855007267e25c16b6306c69369f3ea4e8f3d91cf55e264fa9b898": {
       "cipher": "aes-256-gcm",
       "name": "🇳🇱[www.v2nodes.com] ss-NL-1614... #1",
@@ -1666,6 +1657,18 @@
       "port": 19999,
       "server": "151.241.19.29",
       "type": "ss"
+    },
+    "535e13772931fd6fa4cfe358871aea71111613a46fc9254efb3be1cd1cfb3b59": {
+      "name": "🇺🇸US_247|301KB/s|R002-260618 [普通]",
+      "password": "null",
+      "port": 443,
+      "server": "38.28.193.188",
+      "skip-cert-verify": true,
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true,
+      "username": "null"
     },
     "546865aa66a18de6aa4685f642b571869bacf01e194364c04ee8d4fea3b5a0d5": {
       "name": "NL_speednode_0014 [高速]",
@@ -1916,20 +1919,6 @@
       "type": "http",
       "udp": true
     },
-    "5c0955a7bf09be2d99c959fc3a2ec3a971865ae2a62e21482b1da3da4357a601": {
-      "alterId": 0,
-      "cipher": "auto",
-      "name": "vmess-1853452291",
-      "network": "tcp",
-      "port": 1234,
-      "server": "162.19.204.71",
-      "servername": "supervpn.super.com",
-      "skip-cert-verify": true,
-      "tls": true,
-      "type": "vmess",
-      "udp": true,
-      "uuid": "5c040f1d-45db-43bd-8d46-e4950e433735"
-    },
     "5cb336ddd9b830a3e3bb5fbcd3f631fe57fff8935c06339402a0abea152a4fd5": {
       "cipher": "chacha20-ietf-poly1305",
       "name": "🏳[www.v2nodes.com] ss- #12",
@@ -1980,14 +1969,6 @@
       "type": "http",
       "udp": true
     },
-    "610397fa3961b677678577e78d6d7a1faf784914646a263a6536f87428b6b528": {
-      "cipher": "aes-256-gcm",
-      "name": "🏳[www.v2nodes.com] ss- #1",
-      "password": "kDWvXYZoTBcGkC4",
-      "port": 8882,
-      "server": "51.222.136.236",
-      "type": "ss"
-    },
     "61dec4b6ad88ef9d73391bf7fd43c770bc238468cea5077c12661e42f0678378": {
       "name": "🇸🇬SG_11|566KB/s [高速]",
       "password": "",
@@ -2016,16 +1997,6 @@
       "type": "wireguard",
       "udp": true
     },
-    "62b8a8ede46518432f231e7c9e1b2ba82372348fddc27ef4b1b52b671ffcfb7b": {
-      "cipher": "aes-256-gcm",
-      "name": "🇺🇸US_155|1.2MB/s|M003-260806",
-      "password": "ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=",
-      "port": 19999,
-      "server": "38.91.107.188",
-      "sub_tag": "M003-260806",
-      "type": "ss",
-      "udp": true
-    },
     "6310b9b29603b7f5f0f768b0b8f06f850c22eed5120e4445b1a8412157e68d94": {
       "name": "hysteria2-1853502854",
       "password": "H7mP2xY9kJ4nQ8wR5tF6vB3z",
@@ -2034,6 +2005,18 @@
       "skip-cert-verify": true,
       "sni": "",
       "type": "hysteria2"
+    },
+    "63248eb0284e6982b6a7ec7321bd49a717cb0be193914be8acda1b542ed5a315": {
+      "name": "🇺🇸US_7|1.7MB/s|K001-260618 [高速]",
+      "password": "None",
+      "port": 443,
+      "server": "12.202.180.118",
+      "skip-cert-verify": true,
+      "sub_tag": "K001-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true,
+      "x-toolall-mihomo": true
     },
     "6377132886dcba839e1708951292d06e0a21aebef7c29d247a55f681a1d347d0": {
       "alpn": [
@@ -2065,16 +2048,6 @@
       "type": "http",
       "udp": true
     },
-    "643233bdbf114308dbb47497dd099c729742b1533934184e9e7f500aed5bdb6b": {
-      "name": "trojan-1947502359",
-      "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a",
-      "port": 443,
-      "server": "170.101.101.211",
-      "skip-cert-verify": true,
-      "sni": "api.explorecreativejobsandenhanceyourcareerportfolio.com",
-      "type": "trojan",
-      "udp": true
-    },
     "65242b970d886bf804df89d1d091fc4ef0bf9b373a17e17f3044349723e17f6c": {
       "name": "🇳🇴NO_2|1.0MB/s|R002-260618 [高速]",
       "port": 9443,
@@ -2093,16 +2066,6 @@
       "server": "98.98.207.163",
       "sub_tag": "A004-260618",
       "type": "ss",
-      "udp": true
-    },
-    "65d6d2575736666a35e54aadb7bf5d2ce12cc025dccef06784d622d70b6650f2": {
-      "name": "🇦🇱AL_2|984KB/s|R002-260618 [高速]",
-      "port": 443,
-      "server": "31.171.154.66",
-      "skip-cert-verify": true,
-      "sub_tag": "R002-260618",
-      "tls": true,
-      "type": "http",
       "udp": true
     },
     "66ac274432c045e8c11f1d81c310174d9efff1f373b61a8048da1d455d74a249": {
@@ -2203,17 +2166,6 @@
       "type": "http",
       "udp": true
     },
-    "6e0eed8d575be57d8e1dd89db63d47759be4a11a14edc69198900455cd732eaf": {
-      "name": "🇩🇪DE_85|4.2MB/s [高速]",
-      "password": "null",
-      "port": 9002,
-      "server": "158.173.154.1",
-      "skip-cert-verify": true,
-      "tls": true,
-      "type": "http",
-      "udp": true,
-      "username": "null"
-    },
     "6f2d66c47ce70d54c63a55a4113a34e2b383aeac90e4e97ac726cc2822bd770e": {
       "name": "🇹🇷TR_3|64KB/s|A001-260618",
       "network": "tcp",
@@ -2233,15 +2185,6 @@
       "skip-cert-verify": true,
       "tls": true,
       "type": "http"
-    },
-    "70464a06abb5255c3ab8c1aafc825728a230718417aecadbdc8150075a5cf53c": {
-      "name": "DK_speednode_0006 [高速]",
-      "port": 9002,
-      "server": "158.173.154.1",
-      "skip-cert-verify": true,
-      "tls": true,
-      "type": "http",
-      "udp": true
     },
     "70b4ebb2f0c1ea73209f8700dd929c2bead8bca41f39c31ab3ca98d79e1efc17": {
       "name": "🇸🇬SG_11|644KB/s|K001-260618 [高速]",
@@ -2320,16 +2263,6 @@
       "server": "193.108.117.111",
       "sub_tag": "M003-260806",
       "type": "ss",
-      "udp": true
-    },
-    "7608dc065a9bbef7c3d98827b87a4f48f530a0787eaa4fb41bcdd9cb61996a1f": {
-      "name": "🇲🇰MK_1|738KB/s|P002-260618 [高速]",
-      "port": 443,
-      "server": "185.225.28.50",
-      "skip-cert-verify": true,
-      "sub_tag": "P002-260618",
-      "tls": true,
-      "type": "http",
       "udp": true
     },
     "76434cab33115b70c2bf2cd1f6904de43c8b4d6a4f6263d846674f4f0ce9c78c": {
@@ -2434,16 +2367,6 @@
       "type": "http",
       "udp": true
     },
-    "79f2feb3b0968ac444f46b29fe019cf1a9e7262e0390e2f29c82225c7914fd52": {
-      "cipher": "chacha20-ietf-poly1305",
-      "name": "🇳🇱NL_9|8.2MB/s|B007-260618",
-      "password": "oZIoA69Q8yhcQV8ka3Pa3A",
-      "port": 8080,
-      "server": "82.38.31.66",
-      "sub_tag": "B007-260618",
-      "type": "ss",
-      "udp": true
-    },
     "7a5d182a9abf8f2e92117c1aea19c6bd8306918c3f78237af70b25013f9e1930": {
       "cipher": "chacha20-ietf-poly1305",
       "name": "🇦🇹[www.v2nodes.com] ss-AT-1614...",
@@ -2495,17 +2418,6 @@
       "sni": "connectingpeoplewithgreatjobs.com",
       "type": "trojan"
     },
-    "7cb820b396ad72abf467ebc45507eb33b8e5b0af6784088de71081086c92368b": {
-      "name": "🇯🇵JP_31|275KB/s|R002-260618 [高速]",
-      "port": 8443,
-      "server": "64.176.51.83",
-      "skip-cert-verify": true,
-      "sni": "64.176.51.83",
-      "sub_tag": "R002-260618",
-      "tls": true,
-      "type": "http",
-      "udp": true
-    },
     "7d4be8175fa0d05bd738240623c973acd9ec3a75d3f1380e21f78d2aee013a3e": {
       "alpn": [
         "h2"
@@ -2536,6 +2448,17 @@
       "type": "http",
       "udp": true,
       "username": "null"
+    },
+    "7d81f74f9a2f0c60c33d2f81cae12e9d3f667c71d36045bc21da7d0e0e89133b": {
+      "name": "🇺🇸US_548|88KB/s|R002-260618 [普通]",
+      "port": 443,
+      "server": "137.175.22.52",
+      "skip-cert-verify": true,
+      "sni": "137.175.22.52",
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true
     },
     "7e64756eef6886905206352c1880c88340aaf829326aa820d6595dc633fcf788": {
       "cipher": "chacha20-ietf-poly1305",
@@ -2586,14 +2509,6 @@
       "udp": true,
       "username": ""
     },
-    "7fe42383878572c9619e006929a54f8bbfa03217ba11517fd62d1f043748b1ff": {
-      "cipher": "aes-256-gcm",
-      "name": "🇮🇹[www.v2nodes.com] ss-IT-1619... #5",
-      "password": "ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=",
-      "port": 19999,
-      "server": "202.50.253.45",
-      "type": "ss"
-    },
     "80541f7658220a9b4c23703b21aec46d7933ebc273293fc4ca0a57281bde092f": {
       "name": "🇵🇱PL_10|1.0MB/s|R002-260618 [高速]",
       "port": 443,
@@ -2615,6 +2530,16 @@
       "type": "http",
       "udp": true,
       "x-toolall-mihomo": true
+    },
+    "810409f414a6631d1466b5335b47be08c2cb5ce3bf401887f54d8ee98026fda5": {
+      "name": "🇮🇹IT_27|1.0MB/s|R002-260618 [高速]",
+      "port": 443,
+      "server": "185.183.105.130",
+      "skip-cert-verify": true,
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true
     },
     "818b03a8a27013364871f72517e800461a28109d0c8ddee26c38fd0fb4374278": {
       "name": "🇱🇻LV_1|2.5MB/s|R002-260618 [高速]",
@@ -2645,6 +2570,16 @@
         "path": "/api"
       }
     },
+    "830fe0d8cb119d68c9010581e7045882b824c2267796901fea6741b7c89feb87": {
+      "name": "🇪🇸ES_31|1.2MB/s|R002-260618 [高速]",
+      "port": 443,
+      "server": "130.195.250.18",
+      "skip-cert-verify": true,
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true
+    },
     "8364a8bb69b1746adcbffd8de69892885abeb7a26e8d93b8c8df23cb0a3da1c3": {
       "name": "hysteria2-1828529280",
       "password": "1671a252e2a97dc2bda4e515475931da",
@@ -2653,19 +2588,6 @@
       "skip-cert-verify": true,
       "sni": "",
       "type": "hysteria2"
-    },
-    "84576440cb72ef69344135f8917b4000c3037758ee39602969a805cff430dd6c": {
-      "name": "🇱🇹LT_5|2.3MB/s|R002-260618 [高速]",
-      "password": "null",
-      "port": 443,
-      "server": "89.124.11.9",
-      "skip-cert-verify": true,
-      "sni": "89.124.11.9",
-      "sub_tag": "R002-260618",
-      "tls": true,
-      "type": "http",
-      "udp": true,
-      "username": "null"
     },
     "8587c51ee6f966e96b6b00c187c39576f464040decdbf47c371aa287cc2af044": {
       "name": "NN_speednode_0023 [高速]",
@@ -2743,16 +2665,6 @@
       "sni": "172.64.68.89",
       "tls": true,
       "type": "http"
-    },
-    "89790aba7d69139b6f2c83e1ad95d5b2b136dd3d4944a7148c09a8531ef8fff2": {
-      "name": "🇸🇬SG_29|280KB/s|R002-260618 [高速]",
-      "port": 443,
-      "server": "154.26.139.24",
-      "skip-cert-verify": true,
-      "sub_tag": "R002-260618",
-      "tls": true,
-      "type": "http",
-      "udp": true
     },
     "8a9d0b9c34f3b2ba7716977b8f13bbdded3c2c8337a5c5dd30d7dc0b98be2202": {
       "ip": "172.16.0.2/32",
@@ -2945,14 +2857,6 @@
       "type": "http",
       "udp": true
     },
-    "93362691446d4352114899b97959bbd7d4ddf5a1944754fd6e4c2aeda9a65cb0": {
-      "name": "🇹🇭TH_1|2.0MB/s",
-      "password": "VAwyJQX0iKMJiyCw5UVK9wGH",
-      "port": 42000,
-      "server": "103.14.164.30",
-      "type": "socks5",
-      "username": "route164JIa2CBPxfy"
-    },
     "93480ccd8310646e737f2ee412474ad0444648c214617e29b5c20349aca9f1d7": {
       "name": "🇷🇸RS_1|803KB/s|K001-260618 [高速]",
       "password": "None",
@@ -3055,6 +2959,18 @@
       "type": "http",
       "udp": true
     },
+    "968fa0ee8b0df391ad00f1dee8599168b5808607c4c9eaa2f5b77d1b3bed57cc": {
+      "name": "🇪🇪EE_3|891KB/s|K001-260618 [高速]",
+      "password": "None",
+      "port": 9443,
+      "server": "95.153.31.66",
+      "skip-cert-verify": true,
+      "sub_tag": "K001-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true,
+      "username": ""
+    },
     "96ec921a4c3e944d9a8d5c7eadaffbd18a75ea30d3043eb161ac174f47846ca8": {
       "client-fingerprint": "safari",
       "flow": "xtls-rprx-vision",
@@ -3092,17 +3008,6 @@
       "tls": true,
       "type": "http",
       "udp": true
-    },
-    "9ad570cf8a0d303c1b56de8b851d141f82952451339b8dbe0aff56641a60b4ab": {
-      "name": "🇺🇸US_276|829KB/s [高速]",
-      "password": "",
-      "port": 9002,
-      "server": "138.199.35.205",
-      "skip-cert-verify": true,
-      "tls": true,
-      "type": "http",
-      "udp": true,
-      "username": ""
     },
     "9b10e8e6bf84dcbbed0464611e5d20dfb08128ec01a678c87036e031929382f1": {
       "cipher": "aes-256-gcm",
@@ -3156,18 +3061,6 @@
       "wnoisecount": "15",
       "wnoisedelay": "1-2",
       "wpayloadsize": "5-10"
-    },
-    "9c4283d7df4942dc60e83b86ed2420d42d89225a64322692d52ec0812d137b68": {
-      "name": "🇨🇭CH_22|996KB/s|K001-260618 [高速]",
-      "password": "None",
-      "port": 9443,
-      "server": "149.88.27.46",
-      "skip-cert-verify": true,
-      "sub_tag": "K001-260618",
-      "tls": true,
-      "type": "http",
-      "udp": true,
-      "username": ""
     },
     "9cd203da3821dda75dab0ce8e1bf0d5469d72ba01ef6a315b07c980d58cb9eb8": {
       "cipher": "2022-blake3-chacha20-poly1305",
@@ -3232,6 +3125,18 @@
       "udp": true,
       "x-toolall-mihomo": true
     },
+    "9f45414d33462a3364751422c1d29ef40642f7f40d91a2ba455411c810aa1214": {
+      "name": "🇨🇦CA_14|918KB/s|K001-260618 [高速]",
+      "password": "None",
+      "port": 443,
+      "server": "206.223.183.13",
+      "skip-cert-verify": true,
+      "sub_tag": "K001-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true,
+      "username": ""
+    },
     "9f7f9e2e483f005ba25ec0d8c4552eb81042efec8c5c9eb2e38ef05e7a0a33d2": {
       "name": "trojan-1877412058",
       "password": "f0eb8c92ce8946aaba856569cff1a16b",
@@ -3253,13 +3158,12 @@
       "type": "http",
       "udp": true
     },
-    "a01dd6dcc5e0908cd7dbe8a9b081f10154f8ca7c406c101347fe08e0d148a1ca": {
-      "name": "🇩🇪DE_27|4.3MB/s|P002-260618 [高速]",
-      "password": "None",
-      "port": 443,
-      "server": "87.106.223.158",
+    "a03346f0f0a7a334a82346b06848bcff9fe2c64c8919aae109c9f15180ca1c8a": {
+      "name": "🇬🇧GB_20|1.1MB/s|R002-260618 [高速]",
+      "port": 9443,
+      "server": "84.17.50.129",
       "skip-cert-verify": true,
-      "sub_tag": "P002-260618",
+      "sub_tag": "R002-260618",
       "tls": true,
       "type": "http",
       "udp": true
@@ -3303,6 +3207,16 @@
       "type": "http",
       "udp": true
     },
+    "a23f6ba6c1b1187b1e8e4190271d3a0ce6113083fe826d58d0a69dc3d792b36d": {
+      "name": "🇱🇺LU_1|1.2MB/s|R002-260618 [高速]",
+      "port": 443,
+      "server": "185.221.132.242",
+      "skip-cert-verify": true,
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true
+    },
     "a3a509939ec630ab4a3eeb5b14b39244c1e749464fe632bf7630ed73f6a5732f": {
       "name": "🇩🇪DE_45|1.7MB/s|R002-260618 [高速]",
       "password": "None",
@@ -3314,16 +3228,15 @@
       "type": "http",
       "udp": true
     },
-    "a4fc8a9a0c8d795f1e323339d314f0568194bdd28b702d5cbd4c43ce23583773": {
-      "name": "🇲🇽MX_8|527KB/s|P002-260618",
-      "password": "sZnD8GTz",
-      "port": 42000,
-      "server": "144.225.47.158",
+    "a4d3572ae220654aa2eca06e6e5ef31ba01c4a8aa46ea040aa31f0c9269f47e9": {
+      "name": "🇺🇸US_207|190KB/s|R002-260618 [普通]",
+      "port": 443,
+      "server": "38.28.193.188",
       "skip-cert-verify": true,
-      "sub_tag": "P002-260618",
-      "type": "socks5",
-      "udp": true,
-      "username": "DJy1T0dt"
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true
     },
     "a5ec9ede6c36dbf774818888b0b472504eba9859abd253b4bb19374a47ef968d": {
       "name": "🇯🇵JP_15|526KB/s [高速]",
@@ -3446,23 +3359,6 @@
       "type": "ss",
       "udp": true
     },
-    "ab6af3c47f70d6acac7a4f7614c40f1e3d72fc0256554e1a6276a579504f88e0": {
-      "client-fingerprint": "firefox",
-      "flow": "xtls-rprx-vision",
-      "name": "vless-1828036218",
-      "network": "raw",
-      "port": 443,
-      "reality-opts": {
-        "public-key": "uTmb-ytXsx8p0fkBz7A76SHpWk7_oVutIA4LGTE8BQk",
-        "short-id": "f98843107912e782"
-      },
-      "server": "209.200.246.148",
-      "servername": "www.cloudflare.com",
-      "tls": true,
-      "type": "vless",
-      "udp": true,
-      "uuid": "ca52e2b6-fb9f-4dac-b6dc-49da9923f251"
-    },
     "ab7be305bd8cf4e5aa285120b2186652a7c6b91fdfb28330355d7c27f1c1758c": {
       "name": "trojan-1939194006",
       "password": "f0eb8c92ce8946aaba856569cff1a16b",
@@ -3481,15 +3377,6 @@
       "skip-cert-verify": true,
       "sni": "127.0.0.1",
       "type": "hysteria2"
-    },
-    "ac0af0ae5a2721343a6338fc15f3a5ce9d9b98cc4b28912529332e4c88780295": {
-      "cipher": "aes-256-gcm",
-      "name": "🇮🇹 意大利 | ITA #2",
-      "password": "ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=",
-      "port": 19999,
-      "server": "202.50.253.27",
-      "type": "ss",
-      "udp": true
     },
     "ac1c17a703ee84d805b1bb35c28b7ca1acb6b8eb94b3ad78c14283640da5626a": {
       "name": "🇮🇪IE_1|1.1MB/s [高速]",
@@ -3510,6 +3397,24 @@
       "tls": true,
       "type": "http",
       "udp": true
+    },
+    "ae802659b77ac8ca90727727957265ab77cf5f070eefaefef45da0c4c1b1a110": {
+      "client-fingerprint": "firefox",
+      "encryption": "none",
+      "name": "🇫🇮FI_3|1.4MB/s [高速]",
+      "network": "tcp",
+      "port": 443,
+      "reality-opts": {
+        "public-key": "PslSaSQWP4BZZmkL7irab4FMti8sW6BvoC7ytFjJFyc",
+        "short-id": "cc678f10161992a9"
+      },
+      "server": "a80b5386.fi2.h1clayd.click",
+      "servername": "a80b5386.fi2.h1clayd.click",
+      "tls": true,
+      "type": "vless",
+      "udp": true,
+      "uuid": "2ccb06b6-9eac-44eb-ade7-c1e5afb8e7df",
+      "xudp": true
     },
     "affdc6a4119fd11ab84d4c21e8adebb0f20a21b01de345371bfaed3f86ba60eb": {
       "name": "🇷🇴RO_15|979KB/s|R002-260618 [高速]",
@@ -3542,19 +3447,6 @@
       "sub_tag": "P002-260618",
       "tls": true,
       "type": "http",
-      "udp": true
-    },
-    "b0d544954852a05d0f643eec54cba43631ed8a3b8bdca832a2ce66113d3367c0": {
-      "client-fingerprint": "chrome",
-      "name": "🇨🇭CH_7|365KB/s|M003-260806",
-      "network": "tcp",
-      "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a",
-      "port": 443,
-      "server": "208.69.78.19",
-      "skip-cert-verify": true,
-      "sni": "www.yourultimateprofessionalcareerhub.com",
-      "sub_tag": "M003-260806",
-      "type": "trojan",
       "udp": true
     },
     "b13737a971666a22f8a7bd8ab844c0654f93c71f12cb81d1d9633b7e93f1a501": {
@@ -3671,15 +3563,6 @@
       "udp": true,
       "x-toolall-mihomo": true
     },
-    "b6025672cebfce9842325a2b894a8bb42fec8f35385e19d3d5a9599b6c6c2330": {
-      "name": "DE_speednode_0004 [高速]",
-      "port": 443,
-      "server": "213.109.163.119",
-      "skip-cert-verify": true,
-      "tls": true,
-      "type": "http",
-      "udp": true
-    },
     "b645eeef0be6887032b66ace24d0644b4d7849d4e471b818109b969230309548": {
       "name": "🇺🇸US_11|2.8MB/s [高速]",
       "port": 9443,
@@ -3767,17 +3650,6 @@
       },
       "xudp": true
     },
-    "b98645e8ac2748592e9a696741bb8d0a22da3153bb200b4b1e458e79273f2fa5": {
-      "name": "🇳🇱NL_11|1.0MB/s|R002-260618 [高速]",
-      "port": 9002,
-      "server": "84.17.47.149",
-      "skip-cert-verify": true,
-      "sub_tag": "R002-260618",
-      "tls": true,
-      "type": "http",
-      "udp": true,
-      "x-toolall-mihomo": true
-    },
     "b9eaa6a877198f75b74bda3df79bf9115aa8338fec387269c7d6bb613396f8c0": {
       "name": "🇩🇪DE_105|6.6MB/s [高速]",
       "password": "null",
@@ -3808,6 +3680,16 @@
       "tls": true,
       "type": "http",
       "udp": true
+    },
+    "ba836ee88321fe6a1d6e19cd7f9308cd1db6af4d00bcb18e39a98894a77dd4c2": {
+      "cipher": "aes-256-gcm",
+      "country": "🇳🇿 NZ",
+      "delay": 562,
+      "name": "意大利 - Milan - 7 [普通]",
+      "password": "ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=",
+      "port": 19999,
+      "server": "202.50.253.18",
+      "type": "ss"
     },
     "baf2f18ca1c2becea4b25af326a7885a56412d16995c21a1d80ade02c6191c9b": {
       "name": "🇷🇴RO_13|1.0MB/s|R002-260618 [高速]",
@@ -3999,6 +3881,16 @@
       "server": "79.127.139.242",
       "type": "ss"
     },
+    "c32b3f2afabc5e3de81fc97aeb5af732bab6d54873be3652577923f5bdface0a": {
+      "name": "🇬🇧GB_22|1.3MB/s|R002-260618 [高速]",
+      "port": 443,
+      "server": "37.120.233.34",
+      "skip-cert-verify": true,
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true
+    },
     "c4508b412b97e4b7ef6838a34bea13477bfb0361af6b0557de3cdefdeb9c739c": {
       "name": "[863.9ms +/-4ms] BR_speednode_0002 [高速]",
       "port": 9443,
@@ -4006,18 +3898,6 @@
       "skip-cert-verify": true,
       "tls": true,
       "type": "http"
-    },
-    "c5055aeb07b76283f817198a9375e8ca96403ba698a1e07fc30ea6f2f31d0fa8": {
-      "name": "🔵10@oneclickvpnkeys",
-      "obfs": "salamander",
-      "obfs-password": "HysteriaHowdy",
-      "password": "HowdyHysteria2023w0W",
-      "port": 8443,
-      "server": "hysteria.udpgw.com",
-      "skip-cert-verify": true,
-      "sni": "sni-here.com",
-      "tls": false,
-      "type": "hysteria2"
     },
     "c5cf68dcb456c3828c89e12fa046287441b8e314fdf7b7a7c5a52ab50eade014": {
       "name": "🇨🇭CH_1|3.7MB/s [高速]",
@@ -4068,6 +3948,23 @@
       "uuid": "5c040f1d-45db-43bd-8d46-e4950e433735",
       "xudp": true
     },
+    "c762d53fc61b62976bf129a953ec9c2fa00278ae49f8df9d9ccdb8924f4953c9": {
+      "client-fingerprint": "chrome",
+      "flow": "xtls-rprx-vision",
+      "name": "Igareck Node 033 | 🇲🇽 Mexico， Apodaca | [BL] [高速]",
+      "network": "tcp",
+      "port": 61503,
+      "reality-opts": {
+        "public-key": "U7t4RFE9MSMtC-o1DoJ8pYzKMfgVpTg6ZhTTknBrVkU",
+        "short-id": "1f2519bb96e5589c"
+      },
+      "server": "40.233.1.77",
+      "servername": "www.cloudflare.com",
+      "tls": true,
+      "type": "vless",
+      "udp": true,
+      "uuid": "04bcfbb8-06d1-4922-ad5a-54ab28b1afda"
+    },
     "c797033f6f52555561267bb2b2d14c570afa69e59166b3d9bd6a27945d3959df": {
       "name": "🇦🇹AT_1|2.1MB/s|R002-260618 [高速]",
       "port": 443,
@@ -4092,15 +3989,17 @@
       "type": "trojan",
       "udp": true
     },
-    "cb6ae96da10d31f3ce83f770e89983d0816260f5745b0280b7892e49d76536a9": {
-      "cipher": "chacha20-ietf-poly1305",
-      "name": "🇳🇱NL_10|5.9MB/s|A003-260618",
-      "password": "k1dBOmOB4oqi7Ump37a1bQ",
-      "port": 8080,
-      "server": "82.38.31.217",
-      "sub_tag": "A003-260618",
-      "type": "ss",
-      "udp": true
+    "cc2b3730445d9a9e2da234d7a66a3dd62aaf20ad7f6dd52adf8356084f5144b4": {
+      "name": "🇦🇱AL_6|782KB/s|K001-260618 [高速]",
+      "password": "None",
+      "port": 9443,
+      "server": "31.171.155.210",
+      "skip-cert-verify": true,
+      "sub_tag": "K001-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true,
+      "username": ""
     },
     "cc2d161c221c8c1fc16255c59bb30914f074b3a58c9b357a0a6b8a025c3424dc": {
       "name": "🇺🇸US_159|767KB/s|P002-260618 [高速]",
@@ -4140,17 +4039,6 @@
         "host": "norway.xn--nlqaa425dbaab446bbabd698meae.online",
         "path": "/api"
       }
-    },
-    "ce8a27ac762573f9479ae8456bb3d8227c5720b736e22c9ef65db4088062c0a6": {
-      "name": "🇩🇪DE_60|1.3MB/s|P002-260618 [高速]",
-      "password": "None",
-      "port": 9443,
-      "server": "213.177.229.161",
-      "skip-cert-verify": true,
-      "sub_tag": "P002-260618",
-      "tls": true,
-      "type": "http",
-      "udp": true
     },
     "cf19808e163ea5463e8a698a63c1044e3456b263e67c2f5623cd02339daa0b46": {
       "name": "🇳🇱NL_35|4.8MB/s|R002-260618 [高速]",
@@ -4193,6 +4081,16 @@
         "mode": "auto",
         "path": "/api/de7/sync"
       }
+    },
+    "d009de3a35ca34901e61288bf9d3e7c7805e4abf34969e1e08ec4c51d20ff75d": {
+      "name": "🇺🇸US_221|222KB/s|R002-260618 [普通]",
+      "port": 443,
+      "server": "fan.226278.xyz",
+      "sni": "fan.226278.xyz",
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true
     },
     "d048e56eb88f4566de923bf2f85fd46e63ae07dee6ee63486c94df387da55ff6": {
       "alpn": [
@@ -4253,6 +4151,24 @@
       "sub_tag": "B007-260618",
       "type": "ss",
       "udp": true
+    },
+    "d261633afbe0d90db9b431f6a3869f7fb88674d4aba4de7985efa19b5afca8d7": {
+      "name": "🇮🇪IE_9|798KB/s|R002-260618 [高速]",
+      "port": 443,
+      "server": "149.88.96.12",
+      "skip-cert-verify": true,
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true
+    },
+    "d2622794f1c62a2060e4bbc02032fe6b008a96e118e0381d04ede2941718d590": {
+      "name": "🇬🇧GB_2|1.2MB/s [高速]",
+      "port": 443,
+      "server": "37.120.233.18",
+      "skip-cert-verify": true,
+      "tls": true,
+      "type": "http"
     },
     "d41ddc76bbc91908d4f28307147076b17c7d2d0fc1a21d705d41e8de7acb0ed2": {
       "name": "🇩🇪DE_8|1.3MB/s|K001-260618 [高速]",
@@ -4519,6 +4435,18 @@
         "path": "/service/telemetry/045d381f1166/"
       }
     },
+    "e3405c0a6209c56d1a5ef9829d52ca2d3e901017f771729edcba66a011eece6d": {
+      "name": "🇳🇱NL_186|1.3MB/s|K001-260618 [高速]",
+      "password": "None",
+      "port": 9443,
+      "server": "149.36.51.161",
+      "skip-cert-verify": true,
+      "sub_tag": "K001-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true,
+      "username": ""
+    },
     "e34de104369ff07633ef7315d60a5d01d81db49db10859992e9a3d3230362e3d": {
       "name": "🇩🇪DE_3|1.6MB/s|R002-260618 [高速]",
       "port": 443,
@@ -4574,6 +4502,18 @@
       "udp": true,
       "uuid": "f8c8dc3d-0d37-46b0-8b34-a7232882fcfe",
       "xudp": true
+    },
+    "e5d41c552cbecc14130bb6654ce050b2122d511adb3b667e2d1d15e2ec32f0de": {
+      "name": "🇧🇪BE_1|3.8MB/s|R002-260618 [高速]",
+      "password": "None",
+      "port": 443,
+      "server": "146.70.176.242",
+      "skip-cert-verify": true,
+      "sub_tag": "R002-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true,
+      "x-toolall-mihomo": true
     },
     "e622c0b727fdbd378ac4317733f719429edfffdaa73976a07a5660cebbcf06d8": {
       "alpn": [
@@ -4729,6 +4669,18 @@
       "type": "ss",
       "udp": true
     },
+    "ea6f4ffec76c81b8f33e4865ce97c5aabe61a7be053cdb4ff36d45fbe47f6d94": {
+      "name": "🇪🇪EE_4|1.1MB/s|K001-260618 [高速]",
+      "password": "None",
+      "port": 9443,
+      "server": "192.159.101.174",
+      "skip-cert-verify": true,
+      "sub_tag": "K001-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true,
+      "username": ""
+    },
     "ea76bf094245050d049a0706e48b124414b1a56a69ce2824a5cf7a2a34be5960": {
       "alpn": [
         "h2",
@@ -4750,16 +4702,15 @@
         "path": "/api/de6/sync"
       }
     },
-    "ead290d249edee037a23ad7f5ff8a55c9a49bea3cea4f95dab8e3019a08de7e4": {
-      "name": "NL_speednode_0022 [高速]",
-      "password": "null",
+    "eab9c246042a15dac33b024f67b018aca9d33df3a2720990f5e079c3bf8d4870": {
+      "name": "🇦🇱AL_8|902KB/s|R002-260618 [高速]",
       "port": 443,
-      "server": "103.97.88.154",
+      "server": "87.120.103.242",
       "skip-cert-verify": true,
+      "sub_tag": "R002-260618",
       "tls": true,
       "type": "http",
-      "udp": true,
-      "username": "null"
+      "udp": true
     },
     "eafd2408d13f87ba1df1c687748c0c0b463e6903af2588412f52c4b48395a1ca": {
       "name": "🇩🇪DE_77|4.0MB/s [高速]",
@@ -4771,6 +4722,28 @@
       "type": "http",
       "udp": true,
       "username": "null"
+    },
+    "ec8136602aef02d137e81a4e44ee5a4a57fe8d8c0c247aff17ef963bf87dfb02": {
+      "alterId": "0",
+      "cipher": "auto",
+      "name": "🇺🇸US_643|662KB/s|S001-260618 [高速]",
+      "network": "ws",
+      "packet-encoding": "xudp",
+      "port": 16648,
+      "server": "pdmv4.xiaoyan.io",
+      "skip-cert-verify": false,
+      "sub_tag": "S001-260618",
+      "tls": false,
+      "type": "vmess",
+      "udp": true,
+      "uuid": "904f0569-8695-466f-97cf-0de2face1b46",
+      "ws-opts": {
+        "headers": {
+          "Host": "f9309cc88637c26f552a1a64fb311cae.mobgslb.tbcache.com"
+        },
+        "path": "/"
+      },
+      "xudp": true
     },
     "ecbc8201cfbb449e544536e3e20f825ae5646b89494df06c6a5070fcd04c247e": {
       "name": "🇳🇱NL_91|6.1MB/s|R002-260618 [高速]",
@@ -4814,6 +4787,14 @@
       "sni": "px.ads.linkedin.com",
       "type": "anytls"
     },
+    "ee056caf22271afc1d574a37e78cec91b3f941038b45edc08b83dc4989417c22": {
+      "cipher": "aes-256-gcm",
+      "name": "nl|f92b|puddincat07@Telegram [高速]",
+      "password": "ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=",
+      "port": 19999,
+      "server": "202.50.253.27",
+      "type": "ss"
+    },
     "eecc5bfa3f7635072edabd083c73bc47d4b2fcccc2633d85a9f4fda9e101154b": {
       "client-fingerprint": "chrome",
       "name": "🇰🇷KR_4|317KB/s|A004-260618",
@@ -4825,18 +4806,6 @@
       "sub_tag": "A004-260618",
       "type": "trojan",
       "udp": true
-    },
-    "ef760e5bc4d601c18f70a09dc8d6bffe8e89a00afc0aef3ef4930b065640df68": {
-      "name": "🇳🇱NL_57|4.9MB/s|R002-260618 [高速]",
-      "password": "null",
-      "port": 443,
-      "server": "51.158.243.91",
-      "skip-cert-verify": true,
-      "sub_tag": "R002-260618",
-      "tls": true,
-      "type": "http",
-      "udp": true,
-      "username": "null"
     },
     "f01d34591c43f26b9bba094652ec2925d6581e4c7776752eb6eb0bb295484a03": {
       "name": "🇬🇧GB_11|1.5MB/s|P002-260618 [高速]",
@@ -4917,18 +4886,6 @@
       "udp": true,
       "uuid": "5c040f1d-45db-43bd-8d46-e4950e433735",
       "xudp": true
-    },
-    "f438a8f40ada559d361ba1cd76222ed3aa272f58375c4a247b25853a971a7128": {
-      "name": "🇷🇴RO_46|2.0MB/s|R002-260618 [高速]",
-      "password": "null",
-      "port": 9002,
-      "server": "193.176.84.23",
-      "skip-cert-verify": true,
-      "sub_tag": "R002-260618",
-      "tls": true,
-      "type": "http",
-      "udp": true,
-      "username": "null"
     },
     "f501d2d24fa74dcbf15af042571b53e3757f943e151904c84d9b6925ce912e32": {
       "name": "🇸🇪SE_13|1.1MB/s|P002-260618 [高速]",
@@ -5014,10 +4971,10 @@
       "server": "141.98.101.178",
       "type": "ss"
     },
-    "f8f3f9b239798068ea304e066bca11b018715361cb9f009c0dcb4378b68b4dc8": {
-      "name": "🇩🇪DE_27|3.9MB/s|R002-260618 [高速]",
+    "fa52015dee354d5f6e81d06edcb86773db51f484ede1b8eee6f876a07812f09f": {
+      "name": "🇳🇱NL_26|1.9MB/s|R002-260618 [高速]",
       "port": 443,
-      "server": "213.109.163.119",
+      "server": "5.255.118.82",
       "skip-cert-verify": true,
       "sub_tag": "R002-260618",
       "tls": true,
@@ -5033,6 +4990,18 @@
       "tls": true,
       "type": "http",
       "udp": true
+    },
+    "fb2a86c79033af622aac3a8204ee9b374eac943ddfbd8ea303ff53aa1e0a3b51": {
+      "name": "🇫🇷FR_69|1.5MB/s|K001-260618 [高速]",
+      "password": "None",
+      "port": 9443,
+      "server": "213.139.9.142",
+      "skip-cert-verify": true,
+      "sub_tag": "K001-260618",
+      "tls": true,
+      "type": "http",
+      "udp": true,
+      "username": ""
     },
     "fb5e2fef577d8a962633882ef50d3e3c1adc347f984f4c64d81fe7570392435d": {
       "name": "🇺🇸US_2|1.4MB/s [高速]",
@@ -5085,15 +5054,6 @@
       "type": "http",
       "udp": true,
       "x-toolall-mihomo": true
-    },
-    "fd93263d6dfd6fbdff29f22493c448c9f7c93e62e396c877a9d00195dc8da2b4": {
-      "name": "IE_speednode_0010 [高速]",
-      "port": 443,
-      "server": "18.200.158.139",
-      "skip-cert-verify": true,
-      "tls": true,
-      "type": "http",
-      "udp": true
     },
     "fdfaed0d529a4a053c589715e873c59df732a456e3fadcbdb1dfb025fea7c3bb": {
       "name": "🇳🇱NL_224|6.2MB/s|P002-260618 [高速]",
@@ -5174,5 +5134,5 @@
     }
   },
   "schema_version": 1,
-  "updated_at": "2026-11-23T12:21:35Z"
+  "updated_at": "2026-11-24T04:00:16Z"
 }
