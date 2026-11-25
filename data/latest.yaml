@@ -1,14 +1,13 @@
 proxies:
-- name: 🇩🇪DE_1|1.8MB/s|P002-260618 [高速]
-  password: None
+- name: 🇫🇷FR_24|4.1MB/s [高速]
+  password: 'null'
   port: 443
-  server: 172.64.68.89
+  server: 172.64.69.89
   skip-cert-verify: true
-  sub_tag: P002-260618
   tls: true
   type: http
+  username: 'null'
   udp: true
-  x-toolall-mihomo: true
 - name: 🇨🇦CA_41|949KB/s [高速]
   password: ''
   port: 9443
@@ -30,27 +29,29 @@ proxies:
   port: 19999
   server: 202.50.253.27
   type: ss
-- name: 🇨🇿CZ_4|593KB/s|P002-260618 [高速]
-  password: None
+- name: 🇨🇭CH_23|1.5MB/s|R002-260618 [高速]
   port: 443
-  server: 185.216.35.66
+  server: 31.7.62.50
   skip-cert-verify: true
-  sub_tag: P002-260618
+  sub_tag: R002-260618
   tls: true
   type: http
   udp: true
-- name: 🇷🇸RS_1|1.1MB/s [高速]
-  port: 443
-  server: 146.70.221.18
+- name: 🇦🇱AL_3|533KB/s|K001-260618 [高速]
+  password: None
+  port: 9443
+  server: 31.171.155.210
   skip-cert-verify: true
+  sub_tag: K001-260618
   tls: true
   type: http
-- name: 🇦🇱AL_1|1.1MB/s|P002-260618 [高速]
-  password: None
+  username: ''
+  udp: true
+- name: 🇧🇬BG_7|943KB/s|R002-260618 [高速]
   port: 443
-  server: 87.120.103.242
+  server: 185.94.192.210
   skip-cert-verify: true
-  sub_tag: P002-260618
+  sub_tag: R002-260618
   tls: true
   type: http
   udp: true
@@ -70,16 +71,22 @@ proxies:
   sub_tag: A004-260618
   type: ss
   udp: true
-- fingerprint: ''
-  name: 🇺🇸US_13|2.6MB/s [普通]
-  password: 0324fbc29561
-  port: 443
-  server: sdf65h46wr.df6h451rh.xin
-  skip-cert-verify: true
-  sni: images.ctfassets.net
-  type: anytls
+- cipher: aes-256-gcm
+  name: 🇮🇹IT_9|2.7MB/s [普通]
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  port: 19999
+  server: 202.50.253.18
+  type: ss
   udp: true
-  username: 0324fbc29561
+- name: 🇺🇸US_111|733KB/s|P002-260618 [高速]
+  password: None
+  port: 9002
+  server: 138.199.35.214
+  skip-cert-verify: true
+  sub_tag: P002-260618
+  tls: true
+  type: http
+  udp: true
 - name: 🇺🇸US_217|717KB/s [高速]
   password: 'null'
   port: 9002
@@ -89,67 +96,67 @@ proxies:
   type: http
   username: 'null'
   udp: true
-- name: 🇺🇸US_424|568KB/s|P002-260618 [高速]
+- name: 🇺🇸US_14|2.8MB/s [高速]
   password: None
   port: 9002
-  server: 138.199.35.202
+  server: 138.199.35.216
+  skip-cert-verify: true
+  tls: true
+  type: http
+  username: 'null'
+- name: 🇺🇸US_9|1.8MB/s [高速]
+  port: 9443
+  server: 38.95.111.226
+  skip-cert-verify: true
+  tls: true
+  type: http
+  udp: true
+  x-toolall-mihomo: true
+- name: 🇺🇸US_239|749KB/s|R002-260618 [高速]
+  password: None
+  port: 9002
+  server: 138.199.35.200
+  skip-cert-verify: true
+  sub_tag: R002-260618
+  tls: true
+  type: http
+  udp: true
+- name: 🇫🇷FR_4|3.2MB/s|R002-260618 [高速]
+  port: 443
+  server: 172.64.68.89
+  skip-cert-verify: true
+  sub_tag: R002-260618
+  tls: true
+  type: http
+  udp: true
+- name: 🇺🇸US_95|761KB/s|P002-260618 [高速]
+  password: None
+  port: 9002
+  server: 138.199.35.212
   skip-cert-verify: true
   sub_tag: P002-260618
   tls: true
   type: http
   udp: true
-- name: 🇺🇸US_244|780KB/s|R002-260618 [高速]
-  password: 'null'
-  port: 9002
-  server: 138.199.35.201
-  skip-cert-verify: true
-  sni: 138.199.35.201
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  username: 'null'
-  udp: true
-- name: 🇩🇪DE_1|3.7MB/s [高速]
-  password: 'null'
+- name: 🇺🇸US_437|644KB/s|R002-260618 [高速]
   port: 443
-  server: 172.64.69.89
-  skip-cert-verify: true
-  tls: true
-  type: http
-  username: 'null'
-- name: 🇺🇸US_117|753KB/s|R002-260618 [高速]
-  password: 'null'
-  port: 9002
-  server: 138.199.35.197
+  server: 167.88.60.242
   skip-cert-verify: true
   sub_tag: R002-260618
   tls: true
   type: http
-  username: 'null'
   udp: true
-- name: 🇺🇸US_5|3.0MB/s|R002-260618 [高速]
+- name: 🇺🇸US_248|661KB/s|R002-260618 [高速]
   port: 443
-  server: 12.221.146.147
+  server: 149.22.88.65
   skip-cert-verify: true
   sub_tag: R002-260618
   tls: true
   type: http
   udp: true
-  x-toolall-mihomo: true
-- name: 🇺🇸US_376|898KB/s|K001-260618 [高速]
-  password: None
+- name: 🇺🇸US_188|842KB/s|R002-260618 [高速]
   port: 9443
-  server: 154.47.25.78
-  skip-cert-verify: true
-  sub_tag: K001-260618
-  tls: true
-  type: http
-  username: ''
-  udp: true
-- name: 🇺🇸US_439|1.1MB/s|R002-260618 [高速]
-  password: None
-  port: 443
-  server: 149.88.21.129
+  server: 198.44.135.19
   skip-cert-verify: true
   sub_tag: R002-260618
   tls: true
@@ -165,64 +172,54 @@ proxies:
   type: http
   username: ''
   udp: true
-- name: 🇨🇦CA_33|930KB/s|K001-260618 [高速]
-  password: None
+- name: 🇨🇦CA_28|927KB/s|R002-260618 [高速]
+  port: 9443
+  server: 198.44.157.27
+  skip-cert-verify: true
+  sub_tag: R002-260618
+  tls: true
+  type: http
+  udp: true
+- name: 🇨🇦CA_12|883KB/s|R002-260618 [高速]
   port: 9443
   server: 149.88.98.81
   skip-cert-verify: true
-  sub_tag: K001-260618
+  sub_tag: R002-260618
+  tls: true
+  type: http
+  udp: true
+- name: 🇨🇦CA_26|864KB/s|R002-260618 [高速]
+  port: 443
+  server: 23.169.224.34
+  skip-cert-verify: true
+  sub_tag: R002-260618
+  tls: true
+  type: http
+  udp: true
+- cipher: aes-256-gcm
+  name: nl|1cc0|puddincat07@Telegram [高速]
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  port: 19999
+  server: 202.50.253.36
+  type: ss
+- name: 🇮🇪IE_5|2.7MB/s|R002-260618 [高速]
+  password: 'null'
+  port: 443
+  server: 34.249.214.108
+  skip-cert-verify: true
+  sub_tag: R002-260618
+  tls: true
+  type: http
+  username: 'null'
+  udp: true
+- name: 🇬🇧GB_32|1.2MB/s [高速]
+  password: ''
+  port: 9443
+  server: 37.221.113.162
+  skip-cert-verify: true
   tls: true
   type: http
   username: ''
-  udp: true
-- name: 🇨🇦CA_25|553KB/s|R002-260618 [高速]
-  port: 9443
-  server: 198.44.157.19
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇨🇦CA_1|1.6MB/s|P002-260618 [高速]
-  port: 9443
-  server: 198.44.142.27
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-  x-toolall-mihomo: true
-- name: 🇺🇸US_285|628KB/s|R002-260618 [高速]
-  port: 8090
-  server: 50.76.211.251
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  udp: true
-- name: IE_speednode_0010 [高速]
-  port: 443
-  server: 18.200.158.139
-  skip-cert-verify: true
-  tls: true
-  type: http
-  udp: true
-- name: 🇬🇧GB_23|673KB/s|P002-260618 [高速]
-  password: None
-  port: 443
-  server: 212.102.63.1
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇫🇷FR_30|1.9MB/s|R002-260618 [高速]
-  port: 9443
-  server: 213.139.9.142
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
   udp: true
 - name: 🇳🇱NL_53|6.1MB/s|R002-260618 [高速]
   port: 9002
@@ -241,75 +238,57 @@ proxies:
   type: http
   udp: true
   x-toolall-mihomo: true
-- name: 🇳🇱NL_83|4.3MB/s|P002-260618 [高速]
-  password: None
-  port: 443
-  server: 5.255.118.82
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇩🇪DE_85|958KB/s|R002-260618 [高速]
-  port: 443
-  server: 149.36.50.1
+- name: 🇮🇪IE_6|1.1MB/s|R002-260618 [高速]
+  port: 9443
+  server: 149.88.96.12
   skip-cert-verify: true
   sub_tag: R002-260618
   tls: true
   type: http
   udp: true
-- name: DE_speednode_0003 [高速]
-  password: None
-  port: 443
-  server: 149.36.50.1
-  skip-cert-verify: true
-  tls: true
-  type: http
-  udp: true
-- name: 🇩🇰DK_1|877KB/s|P002-260618 [高速]
+- name: 🇬🇧GB_28|1.3MB/s|P002-260618 [高速]
   password: None
   port: 9443
-  server: 185.245.84.50
+  server: 37.120.233.34
   skip-cert-verify: true
   sub_tag: P002-260618
   tls: true
   type: http
   udp: true
-- name: 🇱🇺LU_1|1.3MB/s|R002-260618 [高速]
-  port: 9443
-  server: 185.221.132.226
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  udp: true
-- name: BR_speednode_0002 [高速]
+- name: 🇺🇸US_268|561KB/s|P002-260618 [高速]
   password: None
-  port: 9443
-  server: 152.233.16.174
-  skip-cert-verify: true
-  tls: true
-  type: http
-  udp: true
-- name: 🇩🇪DE_25|2.2MB/s|P002-260618 [高速]
-  password: None
-  port: 443
-  server: 193.233.75.115
+  port: 8090
+  server: 184.188.139.2
   skip-cert-verify: true
   sub_tag: P002-260618
   tls: true
   type: http
   udp: true
-- name: 🇩🇪DE_10|1.6MB/s [高速]
-  password: 'null'
-  port: 443
-  server: 87.106.223.158
+- name: 🇩🇪DE_16|3.4MB/s|P002-260618 [高速]
+  password: None
+  port: 9002
+  server: 158.173.154.2
   skip-cert-verify: true
+  sub_tag: P002-260618
   tls: true
   type: http
   udp: true
-  username: 'null'
   x-toolall-mihomo: true
+- name: 🇨🇭CH_1|2.6MB/s [高速]
+  port: 9443
+  server: 37.120.213.210
+  skip-cert-verify: true
+  tls: true
+  type: http
+- name: 🇨🇭CH_20|1.0MB/s [高速]
+  password: ''
+  port: 9443
+  server: 149.88.27.46
+  skip-cert-verify: true
+  tls: true
+  type: http
+  username: ''
+  udp: true
 - name: 🇪🇪EE_5|773KB/s|K001-260618 [高速]
   password: None
   port: 9443
@@ -329,24 +308,22 @@ proxies:
   tls: true
   type: http
   udp: true
-- name: 🇪🇪EE_4|1004KB/s|P002-260618 [高速]
-  password: None
-  port: 9443
-  server: 95.153.32.2
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇷🇴RO_68|136KB/s|R002-260618 [高速]
-  password: 'null'
-  port: 9002
-  server: 193.176.84.32
+- name: 🇷🇸RS_2|351KB/s|R002-260618 [高速]
+  port: 443
+  server: 146.70.221.18
   skip-cert-verify: true
   sub_tag: R002-260618
   tls: true
   type: http
-  username: 'null'
+  udp: true
+- name: 🇷🇴RO_31|1.7MB/s|P002-260618 [高速]
+  password: None
+  port: 9002
+  server: 193.176.84.29
+  skip-cert-verify: true
+  sub_tag: P002-260618
+  tls: true
+  type: http
   udp: true
 - name: 🇱🇻LV_12|1.1MB/s|K001-260618 [高速]
   password: None
@@ -367,30 +344,32 @@ proxies:
   tls: true
   type: http
   udp: true
-- name: RO_speednode_0024 [高速]
+- name: 🇷🇴RO_82|2.0MB/s|P002-260618 [高速]
   password: None
   port: 9002
-  server: 193.176.84.24
+  server: 193.176.84.27
   skip-cert-verify: true
+  sub_tag: P002-260618
   tls: true
   type: http
   udp: true
-- name: 🇨🇾CY_1|849KB/s|R002-260618 [高速]
+- name: 🇷🇴RO_14|1.2MB/s|P002-260618 [高速]
+  port: 9002
+  server: 193.176.84.19
+  skip-cert-verify: true
+  sni: www.bing.com
+  sub_tag: P002-260618
+  tls: true
+  type: http
+  udp: true
+- name: 🇬🇷GR_1|1.5MB/s [高速]
   port: 443
-  server: 213.207.130.34
+  server: 149.22.85.78
   skip-cert-verify: true
-  sub_tag: R002-260618
   tls: true
   type: http
   udp: true
-- name: 🇬🇪GE_1|579KB/s|R002-260618 [高速]
-  port: 443
-  server: 195.54.178.210
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  udp: true
+  x-toolall-mihomo: true
 - name: 🇺🇸US_70|768KB/s|R002-260618 [高速]
   port: 9002
   server: 138.199.35.204
@@ -398,35 +377,6 @@ proxies:
   sub_tag: R002-260618
   tls: true
   type: http
-  udp: true
-- name: 🇳🇱NL_115|6.0MB/s|P002-260618 [高速]
-  password: None
-  port: 9002
-  server: 84.17.47.146
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇳🇱NL_86|1.2MB/s|R002-260618 [高速]
-  port: 443
-  server: 185.140.209.235
-  skip-cert-verify: true
-  sni: 482c8436a1f7c908b48a1757abb5dd79-ce85c45206570905.apache-iv.com
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇳🇱NL_105|6.1MB/s|R002-260618 [高速]
-  password: None
-  port: 9002
-  server: 84.17.47.148
-  skip-cert-verify: true
-  sni: 84.17.47.148
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  username: 'null'
   udp: true
 - name: 🇷🇴RO_95|769KB/s|R002-260618 [高速]
   port: 443
@@ -444,23 +394,21 @@ proxies:
   tls: true
   type: http
   username: 'null'
-- cipher: aes-256-gcm
-  name: 意大利 - Milan - 6 [高速]
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  port: 19999
-  server: 202.50.253.63
-  type: ss
-  udp: true
-  delay: 1887
-- name: 🇳🇱NL_127|874KB/s|R002-260618 [高速]
+- name: 爱尔兰 - 都柏林 - 1 [高速]
+  server: 34.249.214.108
   port: 443
-  server: 185.246.153.28
-  skip-cert-verify: true
-  sni: 4a8c2906c96058315dffbc2b0e7ff19b-0c66a58858a795df.apache-iv.com
-  sub_tag: R002-260618
-  tls: true
   type: http
-  udp: true
+  tls: true
+  skip-cert-verify: true
+  delay: 1019
+- name: '[752.3ms +/-7ms] http-84.17.47.123 [高速]'
+  server: 84.17.47.123
+  port: 9002
+  type: http
+  username: 'null'
+  password: 'null'
+  tls: true
+  skip-cert-verify: true
 - name: 荷兰 - 阿姆斯特丹 - 5 [高速]
   server: 84.17.47.148
   port: 9002
@@ -469,22 +417,20 @@ proxies:
   tls: true
   skip-cert-verify: true
   delay: 1048
-- name: 🇳🇱NL_60|4.6MB/s|K001-260618 [高速]
-  password: None
+- name: 德国 - 法兰克福 - 1 [高速]
+  server: 158.173.154.5
   port: 9002
-  server: 84.17.47.149
+  type: http
+  tls: true
   skip-cert-verify: true
-  sub_tag: K001-260618
+  delay: 978
+- name: 🇷🇴RO_26|1.7MB/s [高速]
+  port: 9002
+  server: 193.176.84.24
+  skip-cert-verify: true
   tls: true
   type: http
-  username: ''
   udp: true
-- name: '[870.1ms +/-8ms] http-217.92.132.233 [高速]'
-  server: 217.92.132.233
-  port: 443
-  type: http
-  tls: true
-  skip-cert-verify: true
 - name: 🇺🇸US_195|762KB/s|P002-260618 [普通]
   password: None
   port: 9002
@@ -503,15 +449,24 @@ proxies:
   tls: true
   type: http
   udp: true
-- name: 🇺🇸US_264|481KB/s|P002-260618 [普通]
+- name: 🇺🇸US_13|2.2MB/s [普通]
+  password: 'null'
+  port: 443
+  server: 23.133.176.14
+  skip-cert-verify: true
+  tls: true
+  type: http
+  username: 'null'
+- name: 🇳🇱NL_10|2.2MB/s|P002-260618 [普通]
   password: None
-  port: 8090
-  server: 173.42.49.102
+  port: 9002
+  server: 84.17.47.146
   skip-cert-verify: true
   sub_tag: P002-260618
   tls: true
   type: http
   udp: true
+  x-toolall-mihomo: true
 - name: NL_speednode_0022 [普通]
   port: 9002
   server: 84.17.47.124
@@ -536,30 +491,29 @@ proxies:
   tls: true
   type: http
   udp: true
-- type: hysteria
-  name: 🇺🇸_US_美国_IPV4 [普通]
-  server: 137.175.82.41
-  port: 20022
-  password: dongtaiwang.com
-  tls: true
-  servername: bing.com
-  sni: bing.com
-  skip-cert-verify: true
-  alpn:
-  - h3
-  up: '11'
-  down: '55'
-  auth-str: dongtaiwang.com
-- name: 🇩🇪DE_54|583KB/s|P002-260618 [普通]
-  password: e4b72b531a2d10900519
+- name: 🇺🇸US_280|266KB/s|R002-260618 [普通]
   port: 443
-  server: 167.172.172.190
+  server: 38.28.185.224
   skip-cert-verify: true
-  sub_tag: P002-260618
+  sub_tag: R002-260618
   tls: true
   type: http
   udp: true
-  username: testuser1
+- name: 🇺🇸US_132|274KB/s|Z001-260618 [普通]
+  port: 443
+  server: fan.226278.xyz
+  sub_tag: Z001-260618
+  tls: true
+  type: http
+  udp: true
+  sni: fan.226278.xyz
+- name: 🇷🇴RO_3|3.1MB/s [普通]
+  port: 9002
+  server: 193.176.84.27
+  skip-cert-verify: true
+  sni: www.bing.com
+  tls: true
+  type: http
 - name: 🇷🇴RO_7|1.4MB/s [普通]
   port: 9002
   server: 193.176.84.23
@@ -567,3 +521,11 @@ proxies:
   sni: www.bing.com
   tls: true
   type: http
+- name: '[707.5ms +/-14ms] http-84.17.47.125 [普通]'
+  server: 84.17.47.125
+  port: 9002
+  type: http
+  username: 'null'
+  password: 'null'
+  tls: true
+  skip-cert-verify: true
