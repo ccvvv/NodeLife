@@ -17,81 +17,147 @@ proxies:
   type: http
   username: ''
   udp: true
-- name: 🇺🇸US_378|957KB/s|P002-260618 [高速]
-  port: 9443
-  server: 149.88.21.140
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇬🇧GB_10|700KB/s|P002-260618 [高速]
-  password: None
-  port: 9443
-  server: 84.17.50.214
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇧🇬BG_6|1.2MB/s|R002-260618 [高速]
+- name: 🇺🇸US_362|849KB/s|K001-260618 [高速]
   password: None
   port: 443
-  server: 185.94.192.210
+  server: 12.202.180.118
   skip-cert-verify: true
-  sub_tag: R002-260618
+  sub_tag: K001-260618
   tls: true
   type: http
+  username: ''
   udp: true
 - cipher: aes-256-gcm
-  name: nl|468f|puddincat07@Telegram [高速]
+  name: 🇮🇹IT_4|2.1MB/s|A004-260618 [高速]
   password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   port: 19999
-  server: 202.50.253.45
+  server: 202.50.253.81
+  sub_tag: A004-260618
   type: ss
-- fingerprint: ''
-  name: 🇹🇼TW_4|1.8MB/s [高速]
+  udp: true
+- name: 🇸🇬SG_27|502KB/s|R002-260618 [高速]
+  port: 9443
+  server: 152.233.9.239
+  skip-cert-verify: true
+  sub_tag: R002-260618
+  tls: true
+  type: http
+  udp: true
+- name: 🇹🇼 🇨🇳 台湾 | TWN 5 [高速]
   password: 2902c46c8493
   port: 443
-  server: er8u54dh.df6h451rh.xin
+  server: rtifgjdr.df6h451rh.xin
   skip-cert-verify: true
-  sni: px.ads.linkedin.com
+  sni: docs.microsoft.com
   type: anytls
   udp: true
-  username: 2902c46c8493
-- name: 🇺🇸US_365|101KB/s|R002-260618 [普通]
+- name: 🇹🇼 🇨🇳 台湾 | TWN [e39c3f] [高速]
+  password: 2902c46c8493
   port: 443
-  server: 137.175.22.56
+  server: rtifgjdr.df6h451rh.xin
+  servername: docs.microsoft.com
+  skip-cert-verify: true
+  sni: docs.microsoft.com
+  tls: true
+  type: anytls
+  udp: true
+- name: 🇺🇸US_448|648KB/s|R002-260618 [普通]
+  port: 9443
+  server: 198.44.135.19
   skip-cert-verify: true
   sub_tag: R002-260618
   tls: true
   type: http
   udp: true
-- name: 🇬🇧GB_11|967KB/s|R002-260618 [普通]
+- name: 🇨🇦CA_21|884KB/s|R002-260618 [普通]
   port: 443
-  server: 185.164.138.156
+  server: 206.223.183.21
   skip-cert-verify: true
   sub_tag: R002-260618
   tls: true
   type: http
   udp: true
-- name: 🇩🇪DE_90|716KB/s|R002-260618 [普通]
+- name: 🇯🇵JP_14|270KB/s|R002-260618 [普通]
+  password: exaxgqkKkd0TAMrCxeonWg==
   port: 443
-  server: 79.127.156.177
+  server: jpgmo102-cdn-route.couldflare-cdn.com
+  sub_tag: R002-260618
+  tls: true
+  type: http
+  username: mrwdfNTD8M79LCukCieldrqZWqs=
+  udp: true
+  sni: jpgmo102-cdn-route.couldflare-cdn.com
+- name: 🇺🇸US_115|315KB/s|R002-260618 [普通]
+  port: 443
+  server: 38.28.193.188
   skip-cert-verify: true
   sub_tag: R002-260618
   tls: true
   type: http
   udp: true
-- name: 🇯🇵JP_28|112KB/s|R002-260618 [普通]
+- name: 🇺🇸US_186|324KB/s|R002-260618 [普通]
   port: 443
-  server: fan.571589.xyz
-  skip-cert-verify: false
+  server: 38.28.193.1
+  skip-cert-verify: true
+  sni: 38.28.193.1
   sub_tag: R002-260618
   tls: true
   type: http
   udp: true
-  sni: fan.571589.xyz
+- name: 🇫🇷FR_24|4.1MB/s [高速]
+  password: 'null'
+  port: 443
+  server: 172.64.69.89
+  skip-cert-verify: true
+  tls: true
+  type: http
+  username: 'null'
+  udp: true
+- name: US_speednode_0027 [高速]
+  port: 443
+  server: 172.64.69.89
+  skip-cert-verify: true
+  tls: true
+  type: http
+  udp: true
+- name: 🇺🇸US_12|2.2MB/s [高速]
+  port: 443
+  server: 149.34.248.65
+  skip-cert-verify: true
+  sni: 149.34.248.65
+  tls: true
+  type: http
+- name: 🇺🇸US_526|572KB/s|K001-260618 [高速]
+  password: ''
+  port: 9443
+  server: 76.164.193.18
+  skip-cert-verify: true
+  sub_tag: K001-260618
+  tls: true
+  type: http
+  username: ''
+  udp: true
+- cipher: aes-256-gcm
+  name: nl|8e6f|puddincat07@Telegram [高速]
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  port: 19999
+  server: 202.50.253.72
+  type: ss
+- name: '[807.6ms +/-0ms] http-149.36.51.129 [高速]'
+  server: 149.36.51.129
+  port: 443
+  type: http
+  tls: true
+  skip-cert-verify: true
+- name: 🇩🇪DE_56|1.4MB/s|P002-260618 [高速]
+  password: None
+  port: 9443
+  server: 213.177.229.161
+  skip-cert-verify: true
+  sub_tag: P002-260618
+  tls: true
+  type: http
+  udp: true
 - name: 🇭🇺HU_1|954KB/s|R002-260618 [高速]
   port: 443
   server: 146.70.203.18
@@ -100,13 +166,22 @@ proxies:
   tls: true
   type: http
   udp: true
-- name: 🇲🇰MK_1|838KB/s|P002-260618 [高速]
+- name: 🇦🇱AL_1|1.1MB/s|P002-260618 [高速]
+  password: None
   port: 443
-  server: 185.225.28.50
+  server: 87.120.103.242
   skip-cert-verify: true
   sub_tag: P002-260618
   tls: true
   type: http
+  udp: true
+- cipher: aes-256-gcm
+  name: 🇮🇹IT_5|4.1MB/s|B007-260618 [普通]
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  port: 19999
+  server: 202.50.253.36
+  sub_tag: B007-260618
+  type: ss
   udp: true
 - cipher: aes-256-gcm
   name: '🇮🇹 意大利 | ITA #4-2 [普通]'
@@ -115,14 +190,23 @@ proxies:
   server: 202.50.253.72
   type: ss
   udp: true
-- name: 🇸🇪SE_8|1.1MB/s|R002-260618 [普通]
-  port: 443
-  server: 149.50.216.65
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
+- cipher: aes-256-gcm
+  name: '🇮🇹 意大利 | ITA #2 [普通]'
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  port: 19999
+  server: 202.50.253.45
+  type: ss
   udp: true
+- fingerprint: ''
+  name: 🇺🇸US_13|2.6MB/s [普通]
+  password: 0324fbc29561
+  port: 443
+  server: sdf65h46wr.df6h451rh.xin
+  skip-cert-verify: true
+  sni: images.ctfassets.net
+  type: anytls
+  udp: true
+  username: 0324fbc29561
 - cipher: aes-256-gcm
   name: 🇮🇹IT_9|2.7MB/s [普通]
   password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
@@ -130,13 +214,3 @@ proxies:
   server: 202.50.253.18
   type: ss
   udp: true
-- name: 🇩🇪DE_16|3.4MB/s|P002-260618 [高速]
-  password: None
-  port: 9002
-  server: 158.173.154.2
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-  x-toolall-mihomo: true
