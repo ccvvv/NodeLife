@@ -21,22 +21,6 @@ proxies:
   xudp: true
   packet-encoding: xudp
   servername: it-mil.862400.xyz
-- name: '[432.6ms +/-0ms] 4FreeIran-980fa79e9b [高速]'
-  server: 34.24.25.1
-  port: 443
-  type: hysteria2
-  password: 8dOHZ13sx33R1/PQbhTK/w==
-  sni: bing.com
-  skip-cert-verify: true
-- type: ss
-  name: ❓未知丨yoyapai.com (2) [高速]
-  server: 202.50.253.72
-  port: 19999
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  cipher: aes-256-gcm
-  udp: true
-  tls: false
-  skip-cert-verify: false
 - type: ss
   name: ❓未知丨yoyapai.com (6) [高速]
   server: 202.50.253.27
@@ -46,50 +30,6 @@ proxies:
   udp: true
   tls: false
   skip-cert-verify: false
-- cipher: aes-256-gcm
-  name: '🇮🇹 意大利 | ITA #2 [高速]'
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  port: 19999
-  server: 202.50.253.99
-  type: ss
-  udp: true
-- alpn:
-  - h2
-  client-fingerprint: chrome
-  grpc-opts:
-    grpc-mode: gun
-    grpc-service-name: 2e7d5cf6a7e50c564bfddf62c87e02e1
-  name: 🇳🇱NL_234|9.5MB/s|P002-260618 [高速]
-  network: grpc
-  port: 443
-  server: 98.98.132.110
-  sub_tag: P002-260618
-  tls: true
-  type: vless
-  udp: true
-  uuid: e2f43a75-e683-4d09-96e8-3ad1f2e57100
-  servername: a1116.afl7t8f.com
-- name: 🇯🇵JP_6|353KB/s|R002-260618 [高速]
-  password: 'null'
-  port: 443
-  server: fan.571589.xyz
-  sni: fan.571589.xyz
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  username: 'null'
-  udp: true
-- name: 🇩🇪DE_14|5.4MB/s|R002-260618 [高速]
-  password: 'null'
-  port: 9002
-  server: 158.173.154.4
-  skip-cert-verify: true
-  sni: 158.173.154.4
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  username: 'null'
-  udp: true
 - name: 🇷🇴RO_2|1.5MB/s|R002-260618 [高速]
   password: 'null'
   port: 9002
@@ -100,88 +40,6 @@ proxies:
   type: http
   username: 'null'
   udp: true
-- alpn:
-  - h3
-  auth_str: dongtaiwang.com
-  down: '55'
-  name: 🇫🇷FR_3|2.4MB/s [高速]
-  obfs: ''
-  port: 24667
-  protocol: ''
-  server: 62.210.28.175
-  skip-cert-verify: true
-  sni: bing.com
-  type: hysteria
-  up: '11'
-- name: 🇷🇴RO_11|1.3MB/s [高速]
-  port: 9002
-  server: 193.176.84.33
-  skip-cert-verify: true
-  sni: www.bing.com
-  tls: true
-  type: http
-- name: 🇺🇸US_9|2.2MB/s-2 [普通]
-  password: ''
-  port: 9002
-  server: 138.199.35.201
-  skip-cert-verify: true
-  tls: true
-  type: http
-  udp: true
-  username: ''
-  x-toolall-mihomo: true
-- name: 🇺🇸US_67|952KB/s|P002-260618 [普通]
-  password: None
-  port: 443
-  server: 23.133.176.14
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇺🇸US_248|323KB/s|R002-260618 [普通]
-  port: 443
-  server: 38.28.193.188
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇺🇸US_599|659KB/s|P002-260618 [普通]
-  password: None
-  port: 8090
-  server: 173.42.49.102
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇷🇴RO_64|898KB/s|R002-260618 [普通]
-  port: 9002
-  server: 193.176.84.29
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇺🇸US_20|3.4MB/s [普通]
-  password: ''
-  port: 9002
-  server: 138.199.35.205
-  skip-cert-verify: true
-  tls: true
-  type: http
-  username: ''
-- name: '[OpenRay] 🇷🇺RU-226 [普通]'
-  type: vless
-  server: 165.231.157.150
-  port: 8443
-  uuid: 0173d52e-8e1b-4681-831e-11529677b72f
-  udp: true
-  flow: xtls-rprx-vision
-  tls: true
-  servername: api-6b04608f.adhil.uk
-  client-fingerprint: chrome
 - name: 🇫🇷FR_21|3.7MB/s|K001-260618 [高速]
   password: None
   port: 443
@@ -192,53 +50,6 @@ proxies:
   type: http
   username: ''
   udp: true
-- name: 🇮🇩ID_2|515KB/s|R002-260618 [高速]
-  password: 'null'
-  port: 443
-  server: 178.248.73.58
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  username: 'null'
-  udp: true
-- name: Igareck Node 126 | 🇺🇸 United States， New York | [BL] [高速]
-  type: hysteria2
-  server: n42.neproxy.net
-  port: 14443
-  password: lvu_3390f238bef4e3058ac47c87473755cf_07cd5acf7265adf5c1210040ca46facf:np2.1.HJjJucZ0-OZZUq5Njkl48v1gYx7ol9rXjxYXZUxrQdM
-  udp: true
-  sni: n37.neproxy.net
-  alpn:
-  - h3
-- client-fingerprint: chrome
-  name: 🇹🇼 台湾2|@ripaojiedian [高速]
-  password: 0324fbc29561
-  port: 443
-  server: a54ge.df6h451rh.xin
-  skip-cert-verify: true
-  sni: docs.microsoft.com
-  type: anytls
-  udp: true
-- name: 🇺🇸US_195|733KB/s|P002-260618 [普通]
-  password: 'null'
-  port: 9002
-  server: 138.199.35.195
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  username: 'null'
-  udp: true
-- name: 🇺🇸US_350|828KB/s|P002-260618 [普通]
-  password: None
-  port: 9002
-  server: 138.199.35.212
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
 - name: 🇺🇸US_248|747KB/s [普通]
   password: ''
   port: 9002
@@ -248,45 +59,11 @@ proxies:
   type: http
   username: ''
   udp: true
-- name: 🇺🇸US_327|752KB/s|P002-260618 [普通]
-  password: None
-  port: 9002
-  server: 138.199.35.215
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇺🇸US_289|760KB/s|P002-260618 [普通]
-  password: 'null'
-  port: 9002
-  server: 138.199.35.220
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  username: 'null'
-  udp: true
 - name: 🇲🇽MX_5|402KB/s|R002-260618 [普通]
   port: 443
   server: 45.134.9.41
   skip-cert-verify: true
   sni: 991cc80f13caf81d3426ddebb2da7f49-240d6105b6ef86f0.apache-iv.com
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  udp: true
-- name: NL_speednode_0017 [普通]
-  port: 9002
-  server: 84.17.47.125
-  skip-cert-verify: true
-  tls: true
-  type: http
-  udp: true
-- name: 🇫🇷FR_27|3.4MB/s|R002-260618 [普通]
-  port: 443
-  server: 82.66.235.221
-  skip-cert-verify: true
   sub_tag: R002-260618
   tls: true
   type: http
@@ -299,35 +76,3 @@ proxies:
   tls: true
   type: http
   udp: true
-- name: 🇷🇴RO_55|1.3MB/s [普通]
-  port: 9002
-  server: 193.176.84.20
-  skip-cert-verify: true
-  sni: www.bing.com
-  tls: true
-  type: http
-  udp: true
-- name: 🇺🇸US_33|493KB/s|R002-260618 [413eefe66dea] [普通]
-  port: 8090
-  server: 184.188.139.2
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇮🇪IE_1|1.1MB/s [高速]
-  password: 'null'
-  port: 443
-  server: 18.200.158.139
-  skip-cert-verify: true
-  tls: true
-  type: http
-  username: 'null'
-- type: ss
-  name: 🇮🇹_IT_意大利_IPV4 (4) [高速]
-  server: 202.50.253.99
-  port: 19999
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  cipher: aes-256-gcm
-  tls: false
-  skip-cert-verify: false
