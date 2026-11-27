@@ -21,13 +21,3 @@ proxies:
   xudp: true
   packet-encoding: xudp
   servername: it-mil.862400.xyz
-- name: 🇷🇴RO_2|1.5MB/s|R002-260618 [高速]
-  password: 'null'
-  port: 9002
-  server: 193.176.84.37
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  username: 'null'
-  udp: true
