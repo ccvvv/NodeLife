@@ -28,20 +28,12 @@ def test_render_subscription_allows_empty_result():
     assert publisher.yaml.safe_load(rendered) == {"proxies": []}
 
 
-def test_collect_candidates_merges_all_subscription_snapshots_and_previous_passes():
+def test_collect_candidates_merges_latest_and_previous_passes_only():
     latest = node("latest")
-    previous_release = node("previous")
-    older_release = node("older")
     previous_passed = node("previous-cycle")
     renamed_duplicate = dict(latest, name="old-name")
     candidates = publisher.collect_cycle_candidates(
         [previous_passed, renamed_duplicate],
-        [
-            {"source": "latest.yaml", "proxies": [latest]},
-            {"source": "previous.yaml", "proxies": [previous_release]},
-            {"source": "older.yaml", "proxies": [older_release, dict(latest, name="older-name")]},
-        ],
+        [{"source": "latest.yaml", "proxies": [latest]}],
     )
-    assert [p["name"] for p in candidates] == [
-        "latest", "previous", "older", "previous-cycle"
-    ]
+    assert [p["name"] for p in candidates] == ["latest", "previous-cycle"]
