@@ -17,7 +17,13 @@ from nodelife.probe import probe_one_detailed
 UPSTREAM_REPOSITORY = "ccvvv/AutoSubHub"
 UPSTREAM_BRANCH = "published-subscriptions"
 UPSTREAM_RAW_URL = f"https://raw.githubusercontent.com/{UPSTREAM_REPOSITORY}"
-TARGETS = ["https://www.google.com/generate_204", "https://www.cloudflare.com/cdn-cgi/trace"]
+TARGETS = [
+    "https://www.youtube.com/",
+    "https://web.telegram.org/",
+    "https://www.google.com/generate_204",
+    "https://chatgpt.com/",
+    "https://github.com/",
+]
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_PATH = ROOT / "data" / "latest.yaml"
 USER_AGENT = "NodeLife/0.4 (+https://github.com/ccvvv/NodeLife)"
