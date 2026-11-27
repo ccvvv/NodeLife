@@ -99,8 +99,10 @@ def _classify_tls_error(error: requests.exceptions.SSLError) -> str:
         return "tls_protocol"
     if any(token in message for token in ("handshake failure", "alert handshake", "tlsv1 alert")):
         return "tls_handshake"
-    if any(token in message for token in ("unexpected eof", "eof occurred", "connection reset")):
-        return "tls_peer_closed"
+    if any(token in message for token in ("unexpected eof", "eof occurred")):
+        return "tls_unexpected_eof"
+    if "connection reset" in message:
+        return "tls_connection_reset"
     return "tls_other"
 
 
