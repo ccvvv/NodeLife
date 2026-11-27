@@ -81,25 +81,23 @@ def render_subscription(proxies: list[dict[str, Any]]) -> str:
 
 
 def fetch_upstream_subscriptions(*, session: Any = requests) -> list[dict[str, Any]]:
-    """Fetch the three published AutoSubHub subscription snapshots over HTTPS only."""
-    snapshots: list[dict[str, Any]] = []
-    for filename in ("latest.yaml", "previous.yaml", "older.yaml"):
-        url = f"{UPSTREAM_RAW_URL}/{UPSTREAM_BRANCH}/final/{filename}"
-        response = session.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
-        response.raise_for_status()
-        proxies = extract_proxies(
-            yaml.safe_load(response.text),
-            source=f"AutoSubHub final/{filename}",
-            allow_empty=True,
-        )
-        snapshots.append({"source": filename, "proxies": proxies})
-    return snapshots
+    """Fetch only AutoSubHub's latest published subscription over HTTPS."""
+    filename = "latest.yaml"
+    url = f"{UPSTREAM_RAW_URL}/{UPSTREAM_BRANCH}/final/{filename}"
+    response = session.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
+    response.raise_for_status()
+    proxies = extract_proxies(
+        yaml.safe_load(response.text),
+        source=f"AutoSubHub final/{filename}",
+        allow_empty=True,
+    )
+    return [{"source": filename, "proxies": proxies}]
 
 
 def collect_cycle_candidates(
     previous: list[dict[str, Any]], snapshots: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Union latest/previous/older subscription snapshots and last cycle's passing pool."""
+    """Union latest subscription snapshot and last cycle's passing pool."""
     upstream: list[dict[str, Any]] = []
     for snapshot in snapshots:
         upstream.extend(snapshot["proxies"])
