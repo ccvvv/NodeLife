@@ -97,3 +97,11 @@ def test_detailed_request_does_not_retry_permanent_tls_failure():
     session = Session()
     assert _request_https_result(17890, ["https://example.com"], 3, session) == "example.com:tls_certificate"
     assert session.calls == 1
+
+
+def test_tls_peer_close_subcategories_are_distinguished_safely():
+    import requests
+    from nodelife.probe import _classify_tls_error
+
+    assert _classify_tls_error(requests.exceptions.SSLError("unexpected eof while reading")) == "tls_unexpected_eof"
+    assert _classify_tls_error(requests.exceptions.SSLError("connection reset by peer")) == "tls_connection_reset"
