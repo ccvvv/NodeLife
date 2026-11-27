@@ -108,28 +108,38 @@ def _request_https_result(port: int, targets: Iterable[str], timeout: float, ses
     proxy_url = f"http://127.0.0.1:{port}"
     proxies = {"http": proxy_url, "https": proxy_url}
     observed: list[str] = []
+    # Retry only likely transient transport failures once; permanent TLS/config
+    # failures are recorded immediately. Keep the retry bounded per target.
+    retryable = {"proxy_connection", "request_timeout", "tls_peer_closed", "connection_error"}
     for target in targets:
-        try:
-            response = session.get(
-                target, proxies=proxies, timeout=timeout,
-                allow_redirects=True, verify=True,
-            )
+        host = urlparse(target).hostname or "unknown"
+        category = "request_error"
+        for attempt in range(2):
             try:
-                if 200 <= int(response.status_code) < 400:
-                    return "passed"
-                observed.append((urlparse(target).hostname or "unknown") + ":http_status")
-            finally:
-                response.close()
-        except requests.exceptions.ProxyError:
-            observed.append((urlparse(target).hostname or "unknown") + ":proxy_connection")
-        except (requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout):
-            observed.append((urlparse(target).hostname or "unknown") + ":request_timeout")
-        except requests.exceptions.SSLError as error:
-            observed.append((urlparse(target).hostname or "unknown") + ":" + _classify_tls_error(error))
-        except requests.exceptions.ConnectionError:
-            observed.append((urlparse(target).hostname or "unknown") + ":connection_error")
-        except requests.RequestException:
-            observed.append((urlparse(target).hostname or "unknown") + ":request_error")
+                response = session.get(
+                    target, proxies=proxies, timeout=timeout,
+                    allow_redirects=True, verify=True,
+                )
+                try:
+                    if 200 <= int(response.status_code) < 400:
+                        return "passed"
+                    category = "http_status"
+                finally:
+                    response.close()
+            except requests.exceptions.ProxyError:
+                category = "proxy_connection"
+            except (requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout):
+                category = "request_timeout"
+            except requests.exceptions.SSLError as error:
+                category = _classify_tls_error(error)
+            except requests.exceptions.ConnectionError:
+                category = "connection_error"
+            except requests.RequestException:
+                category = "request_error"
+            if attempt == 0 and category in retryable:
+                continue
+            break
+        observed.append(host + ":" + category)
     if not observed:
         return "request_error"
     # Include only the fixed target hostname and safe error category, never node identity.
