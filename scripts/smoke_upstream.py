@@ -19,8 +19,11 @@ UPSTREAM_URL = (
     "published-subscriptions/final/latest.yaml"
 )
 TARGETS = [
+    "https://www.youtube.com/",
+    "https://web.telegram.org/",
     "https://www.google.com/generate_204",
-    "https://www.cloudflare.com/cdn-cgi/trace",
+    "https://chatgpt.com/",
+    "https://github.com/",
 ]
 
 
@@ -63,7 +66,7 @@ def main() -> int:
     print(f"Published subscription parsed: {total} nodes", flush=True)
     print(
         f"Starting DIAGNOSTIC HTTPS recheck: concurrency={concurrency}, "
-        f"batch_size={batch_size}, targets=2, selected_index={only_index or 'all'}; "
+        f"batch_size={batch_size}, targets={len(TARGETS)}, selected_index={only_index or 'all'}; "
         "no node identities will be printed",
         flush=True,
     )
