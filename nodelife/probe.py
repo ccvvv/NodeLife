@@ -121,7 +121,9 @@ def _request_https_result(port: int, targets: Iterable[str], timeout: float, ses
                     allow_redirects=True, verify=True,
                 )
                 try:
-                    if 200 <= int(response.status_code) < 400:
+                    status_code = int(response.status_code)
+                    if 200 <= status_code < 400:
+                        print(f"PROBE_TARGET host={host} attempt={attempt + 1} result=passed status={status_code}", flush=True)
                         return "passed"
                     category = "http_status"
                 finally:
@@ -136,6 +138,7 @@ def _request_https_result(port: int, targets: Iterable[str], timeout: float, ses
                 category = "connection_error"
             except requests.RequestException:
                 category = "request_error"
+            print(f"PROBE_TARGET host={host} attempt={attempt + 1} result={category}", flush=True)
             if attempt == 0 and category in retryable:
                 continue
             break
