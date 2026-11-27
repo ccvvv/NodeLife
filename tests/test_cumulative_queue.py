@@ -6,7 +6,7 @@ def node(name="node-a", server="example.com", port=443):
             "cipher": "aes-128-gcm", "password": "test-only"}
 
 
-def test_fetches_only_latest_as_https_subscription():
+def test_fetches_latest_previous_and_older_as_https_subscriptions():
     seen = []
     class Response:
         def __init__(self, text):
@@ -22,11 +22,17 @@ def test_fetches_only_latest_as_https_subscription():
             )
 
     snapshots = publisher.fetch_upstream_subscriptions(session=Session())
-    assert [item["source"] for item in snapshots] == ["latest.yaml"]
-    assert [item["proxies"][0]["name"] for item in snapshots] == ["latest"]
-    assert len(seen) == 1
-    assert seen[0].endswith("/final/latest.yaml")
-    assert seen[0].startswith("https://raw.githubusercontent.com/")
+    assert [item["source"] for item in snapshots] == [
+        "latest.yaml", "previous.yaml", "older.yaml"
+    ]
+    assert [item["proxies"][0]["name"] for item in snapshots] == [
+        "latest", "latest", "latest"
+    ]
+    assert len(seen) == 3
+    assert all(url.startswith("https://raw.githubusercontent.com/") for url in seen)
+    assert [url.rsplit("/", 1)[-1] for url in seen] == [
+        "latest.yaml", "previous.yaml", "older.yaml"
+    ]
 
 
 def test_cycle_pool_merges_latest_and_previous_passes_by_fingerprint():
@@ -40,7 +46,7 @@ def test_cycle_pool_merges_latest_and_previous_passes_by_fingerprint():
     ]
 
 
-def test_empty_subscription_is_valid_but_malformed_subscription_fails_closed():
+def test_empty_snapshots_are_valid_but_malformed_subscription_fails_closed():
     class Response:
         def __init__(self, text):
             self.text = text
@@ -53,7 +59,11 @@ def test_empty_subscription_is_valid_but_malformed_subscription_fails_closed():
             return Response(self.text)
 
     empty = publisher.fetch_upstream_subscriptions(session=Session("proxies: []\n"))
-    assert empty == [{"source": "latest.yaml", "proxies": []}]
+    assert empty == [
+        {"source": "latest.yaml", "proxies": []},
+        {"source": "previous.yaml", "proxies": []},
+        {"source": "older.yaml", "proxies": []},
+    ]
 
     import pytest
     with pytest.raises(Exception):
