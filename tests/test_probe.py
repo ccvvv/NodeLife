@@ -60,3 +60,40 @@ def test_probe_rejects_non_https_targets():
         pass
     else:
         raise AssertionError("HTTP target should be rejected")
+
+
+
+def test_detailed_request_retries_transient_peer_close_once():
+    import requests
+    from nodelife.probe import _request_https_result
+
+    class Session:
+        calls = 0
+        def get(self, *args, **kwargs):
+            self.calls += 1
+            if self.calls == 1:
+                raise requests.exceptions.SSLError("unexpected eof while reading")
+            class Response:
+                status_code = 204
+                def close(self):
+                    pass
+            return Response()
+
+    session = Session()
+    assert _request_https_result(17890, ["https://example.com"], 3, session) == "passed"
+    assert session.calls == 2
+
+
+def test_detailed_request_does_not_retry_permanent_tls_failure():
+    import requests
+    from nodelife.probe import _request_https_result
+
+    class Session:
+        calls = 0
+        def get(self, *args, **kwargs):
+            self.calls += 1
+            raise requests.exceptions.SSLError("certificate verify failed")
+
+    session = Session()
+    assert _request_https_result(17890, ["https://example.com"], 3, session) == "example.com:tls_certificate"
+    assert session.calls == 1
