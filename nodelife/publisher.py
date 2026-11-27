@@ -24,6 +24,12 @@ TARGETS = [
     "https://chatgpt.com/",
     "https://github.com/",
 ]
+# Diagnostic-only targets: these never affect pass/fail or publication.
+DIAGNOSTIC_TARGETS = [
+    "https://www.microsoft.com/",
+    "https://www.bing.com/",
+    "https://www.cloudflare.com/",
+]
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_PATH = ROOT / "data" / "latest.yaml"
 USER_AGENT = "NodeLife/0.4 (+https://github.com/ccvvv/NodeLife)"
@@ -41,6 +47,7 @@ def filter_passing(
         raise ValueError("batch_size must be between 1 and 100")
     passed_by_index: dict[int, bool] = {}
     categories: dict[str, int] = {}
+    diagnostic_categories: dict[str, int] = {}
     total = len(proxies)
     for start in range(0, total, batch_size):
         batch = list(enumerate(proxies[start:start + batch_size], start=start))
@@ -60,10 +67,28 @@ def filter_passing(
                     category = "unexpected_probe_error"
                 passed_by_index[index] = category == "passed"
                 categories[category] = categories.get(category, 0) + 1
+                if category != "passed":
+                    # Diagnostic-only: run extra targets only after all primary targets fail.
+                    try:
+                        diagnostic = probe_one_detailed(
+                            proxies[index], mihomo_binary=mihomo_binary,
+                            targets=DIAGNOSTIC_TARGETS,
+                            startup_timeout=startup_timeout,
+                            request_timeout=request_timeout,
+                        )
+                    except Exception:
+                        diagnostic = "unexpected_probe_error"
+                    diagnostic_categories[diagnostic] = diagnostic_categories.get(diagnostic, 0) + 1
+                    print(
+                        f"PROBE_DIAGNOSTIC index={index} primary=failed "
+                        f"extra_targets={diagnostic}",
+                        flush=True,
+                    )
         done = min(start + len(batch), total)
         passed_count = sum(passed_by_index.values())
         print(f"PROGRESS done={done}/{total} passed={passed_count} not_passed={done-passed_count}", flush=True)
     print(f"PROBE_SUMMARY total={total} categories={dict(sorted(categories.items()))}", flush=True)
+    print(f"PROBE_DIAGNOSTIC_SUMMARY total={sum(diagnostic_categories.values())} categories={dict(sorted(diagnostic_categories.items()))}", flush=True)
     return [proxy for index, proxy in enumerate(proxies) if passed_by_index.get(index, False)]
 
 
@@ -87,9 +112,8 @@ def render_subscription(proxies: list[dict[str, Any]]) -> str:
 
 
 def fetch_upstream_subscriptions(*, session: Any = requests) -> list[dict[str, Any]]:
-    """Fetch only AutoSubHub's latest published subscription over HTTPS."""
+    """Fetch current and historical published snapshots for the temporary recovery pass."""
     snapshots: list[dict[str, Any]] = []
-    # Temporary recovery pass: re-test current and two historical published snapshots.
     for filename in ("latest.yaml", "previous.yaml", "older.yaml"):
         url = f"{UPSTREAM_RAW_URL}/{UPSTREAM_BRANCH}/final/{filename}"
         response = session.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
@@ -106,7 +130,7 @@ def fetch_upstream_subscriptions(*, session: Any = requests) -> list[dict[str, A
 def collect_cycle_candidates(
     previous: list[dict[str, Any]], snapshots: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Union latest subscription snapshot and last cycle's passing pool."""
+    """Union upstream snapshots and last cycle's passing pool."""
     upstream: list[dict[str, Any]] = []
     for snapshot in snapshots:
         upstream.extend(snapshot["proxies"])
@@ -122,8 +146,6 @@ def atomic_write_text(path: Path, content: str) -> None:
 
 def main() -> int:
     previous = load_previous_output(OUTPUT_PATH)
-
-    # Candidate input is subscription-only: no Git history/API calls to AutoSubHub.
     snapshots = fetch_upstream_subscriptions()
     candidates = collect_cycle_candidates(previous, snapshots)
     counts = " ".join(
@@ -135,8 +157,6 @@ def main() -> int:
         f"candidates_deduplicated={len(candidates)}",
         flush=True,
     )
-
-    # Re-test the complete merged pool every cycle; publish only this cycle's passes.
     passing = filter_passing(candidates, concurrency=2, batch_size=30) if candidates else []
     atomic_write_text(OUTPUT_PATH, render_subscription(passing))
     print(
