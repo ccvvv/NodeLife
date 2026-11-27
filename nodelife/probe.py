@@ -112,7 +112,7 @@ def _request_https_result(port: int, targets: Iterable[str], timeout: float, ses
     observed: list[str] = []
     # Retry only likely transient transport failures once; permanent TLS/config
     # failures are recorded immediately. Keep the retry bounded per target.
-    retryable = {"proxy_connection", "request_timeout", "tls_peer_closed", "connection_error"}
+    retryable = {"proxy_connection", "request_timeout", "tls_unexpected_eof", "tls_connection_reset", "connection_error"}
     for target in targets:
         host = urlparse(target).hostname or "unknown"
         category = "request_error"
