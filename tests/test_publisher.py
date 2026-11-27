@@ -37,3 +37,17 @@ def test_collect_candidates_merges_latest_and_previous_passes_only():
         [{"source": "latest.yaml", "proxies": [latest]}],
     )
     assert [p["name"] for p in candidates] == ["latest", "previous-cycle"]
+
+
+def test_diagnostic_targets_run_only_after_primary_failure(monkeypatch):
+    calls = []
+
+    def fake_probe(proxy, **kwargs):
+        calls.append(kwargs["targets"])
+        return "tls_peer_closed" if kwargs["targets"] == publisher.TARGETS else "passed"
+
+    monkeypatch.setattr(publisher, "probe_one_detailed", fake_probe)
+    result = publisher.filter_passing([node("sample")], concurrency=1, batch_size=1)
+
+    assert result == []
+    assert calls == [publisher.TARGETS, publisher.DIAGNOSTIC_TARGETS]
