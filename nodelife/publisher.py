@@ -88,16 +88,19 @@ def render_subscription(proxies: list[dict[str, Any]]) -> str:
 
 def fetch_upstream_subscriptions(*, session: Any = requests) -> list[dict[str, Any]]:
     """Fetch only AutoSubHub's latest published subscription over HTTPS."""
-    filename = "latest.yaml"
-    url = f"{UPSTREAM_RAW_URL}/{UPSTREAM_BRANCH}/final/{filename}"
-    response = session.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
-    response.raise_for_status()
-    proxies = extract_proxies(
-        yaml.safe_load(response.text),
-        source=f"AutoSubHub final/{filename}",
-        allow_empty=True,
-    )
-    return [{"source": filename, "proxies": proxies}]
+    snapshots: list[dict[str, Any]] = []
+    # Temporary recovery pass: re-test current and two historical published snapshots.
+    for filename in ("latest.yaml", "previous.yaml", "older.yaml"):
+        url = f"{UPSTREAM_RAW_URL}/{UPSTREAM_BRANCH}/final/{filename}"
+        response = session.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
+        response.raise_for_status()
+        proxies = extract_proxies(
+            yaml.safe_load(response.text),
+            source=f"AutoSubHub final/{filename}",
+            allow_empty=True,
+        )
+        snapshots.append({"source": filename, "proxies": proxies})
+    return snapshots
 
 
 def collect_cycle_candidates(
