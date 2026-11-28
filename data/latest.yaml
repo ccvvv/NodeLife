@@ -10,18 +10,28 @@ proxies:
   udp: true
   username: mrwdfNTD8M79LCukCieldrqZWqs=
   x-toolall-mihomo: true
-- name: '[OpenRay] 🇧🇷BR-119 [普通]'
-  type: vless
-  server: 201.51.12.98
+- cipher: chacha20-ietf-poly1305
+  name: 🇫🇮FI_10|259KB/s|M003-260806 [普通]
+  password: 1c57654308df6d9b93b2bf749dd9f21ed7355aab8fd7ffbb
+  plugin: v2ray-plugin
+  plugin-opts:
+    host: finland.astroapps.io
+    mode: websocket
+    path: /ccad980a661bd347eaebae0f
+    tls: true
   port: 443
-  uuid: 38308ff1-5aa9-494f-a25a-0f2870d56b3e
+  server: finland.astroapps.io
+  sub_tag: M003-260806
+  type: ss
   udp: true
+- name: 🇺🇸US_417|153KB/s|R002-260618 [普通]
+  port: 443
+  server: 38.28.185.222
+  skip-cert-verify: true
+  sub_tag: R002-260618
   tls: true
-  servername: vps3.nemnogogo.com
-  client-fingerprint: chrome
-  network: grpc
-  grpc-opts:
-    grpc-service-name: mobile.api.Event
+  type: http
+  udp: true
 - client-fingerprint: chrome
   grpc-opts:
     grpc-mode: gun
@@ -35,20 +45,3 @@ proxies:
   type: vless
   udp: true
   uuid: 7ff1e7e1-2b5a-4e53-ae77-1516f9eb7754
-- name: 🇺🇸US_599|659KB/s|P002-260618 [普通]
-  password: None
-  port: 8090
-  server: 173.42.49.102
-  skip-cert-verify: true
-  sub_tag: P002-260618
-  tls: true
-  type: http
-  udp: true
-- name: 🇺🇸US_94|146KB/s|R002-260618 [普通]
-  port: 443
-  server: 137.175.22.85
-  skip-cert-verify: true
-  sub_tag: R002-260618
-  tls: true
-  type: http
-  udp: true
